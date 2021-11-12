@@ -10,11 +10,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var skeleton Skeleton
 
-func Start()  {
+func Start() {
 	skeleton = GetSkeleton("./app.json")
 	root := generator.NewRoot()
 	var main = generator.NewFunc(
@@ -22,18 +23,16 @@ func Start()  {
 		generator.NewFuncSignature("main"),
 	)
 
-
 	main = main.AddStatements(
 		generator.NewComment("Register EVO"),
 		generator.NewRawStatement(`evo.Engine()`),
 		generator.NewNewline(),
 	)
-	if !file.IsFileExist(file.WorkingDir()+"/go.mod") {
+	if !file.IsFileExist(file.WorkingDir() + "/go.mod") {
 		run("go", "mod", "init")
 	}
 
-
-	f, err := os.Open(file.WorkingDir()+"/go.mod")
+	f, err := os.Open(file.WorkingDir() + "/go.mod")
 	if err != nil {
 		proc.Die("unable to open go.mod")
 	}
@@ -47,15 +46,15 @@ func Start()  {
 	var imports = []string{
 		"github.com/getevo/evo-ng",
 	}
-	for _,include := range skeleton.Include{
-		if include.Local != nil{
+	for _, include := range skeleton.Include {
+		if include.Local != nil {
 			var pkg = filepath.Base(*include.Local)
 			main = main.AddStatements(
 				generator.NewComment("Register "+*include.Local),
 				generator.NewRawStatement(pkg+`.Register()`),
 				generator.NewNewline(),
 			)
-			imports = append(imports,module+"/"+*include.Local)
+			imports = append(imports, module+"/"+*include.Local)
 		}
 	}
 
@@ -71,17 +70,14 @@ func Start()  {
 	if err != nil {
 		panic(err)
 	}
-	file.Write(file.WorkingDir()+"/main.go",generated)
-	run("go","mod","tidy")
+	file.Write(file.WorkingDir()+"/main.go", generated)
+	run("go", "mod", "vendor")
 	Watcher()
 }
 
-
-
-func run(cmd string,args ...string)  {
-	fmt.Println(cmd,args)
-	c := exec.Command(cmd,args...)
+func run(cmd string, args ...string) {
+	fmt.Println(cmd, strings.Join(args, " "))
+	c := exec.Command(cmd, args...)
 	c.Dir = file.WorkingDir()
 	c.Run()
 }
-
