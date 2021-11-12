@@ -1,0 +1,23 @@
+{
+    "app": "sample",
+    "version": {
+        "auto": true,
+        "major": 0,
+        "minor": 0,
+        "date": "0001-01-01T00:00:00Z"
+    },
+    "include": [
+        {
+            "repo": "github.com/getevo/evo-ng",
+            "branch": "master"
+        },
+        {
+            "local": "apps/myapp"
+        }
+    ],
+    "hot_reload": true,
+    "debug": true,
+    "config": [
+        "./config.yml"
+    ]
+}

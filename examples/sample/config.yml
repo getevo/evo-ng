@@ -1,0 +1,31 @@
+web_server:
+    bind: 0.0.0.0
+    port: "8080"
+    strict_routing: false
+    server_header: evo-ng
+    etag: true
+    recover: true
+    body_limit: 4mb
+    proxy_header: ""
+    disable_keepalive: true
+    disable_pre_parse_multipart_form: false
+    static_dir:
+        - ./web
+    debug: true
+database:
+    enabled: false
+    type: ""
+    user: ""
+    pass: ""
+    server: ""
+    cache: ""
+    cache_size: ""
+    debug: ""
+    database: ""
+    schema: ""
+    ssl_mode: ""
+    params: ""
+    max_open_connections: 0
+    max_idle_connections: 0
+    connection_max_lifetime: 0s
+    connection_string: ""
