@@ -7,8 +7,9 @@ import (
 
 func GetSkeleton(path string) Skeleton {
 	var skeleton Skeleton
-	if err := file.ParseJSON(path,&skeleton); err != nil{
+	if err := file.ParseJSON(path, &skeleton); err != nil {
 		proc.Die(err)
 	}
+	skeleton.Packages = map[string]*Package{}
 	return skeleton
 }

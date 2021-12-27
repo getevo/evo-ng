@@ -13,16 +13,14 @@ func TestPid(t *testing.T) {
 	fmt.Println(Pid())
 }
 
-
 func TestArgs(t *testing.T) {
 	fmt.Println(Args())
 }
 
-
 func TestDie(t *testing.T) {
-	Die(1,2,3)
+	Die(1, 2, 3)
 }
 
 func TestTempDir(t *testing.T) {
-	fmt.Println( TempDir() )
+	fmt.Println(TempDir())
 }

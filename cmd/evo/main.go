@@ -9,11 +9,11 @@ import (
 
 const (
 	WINDOWS = "windows"
-	LINUX = "linux"
-	DARWIN = "darwin"
+	LINUX   = "linux"
+	DARWIN  = "darwin"
 )
 
-func main()  {
+func main() {
 	//check if is installed
 	install.Install()
 
@@ -27,4 +27,3 @@ func main()  {
 
 	ng.Start()
 }
-

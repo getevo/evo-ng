@@ -12,8 +12,6 @@ import (
 	"hash/fnv"
 )
 
-
-
 // FNV32 hashes using fnv32 algorithm
 func FNV32(v interface{}) uint32 {
 	algorithm := fnv.New32()
@@ -62,8 +60,6 @@ func SHA512(v interface{}) string {
 	return stringHasher(algorithm, generic.String(v))
 }
 
-
-
 func stringHasher(algorithm hash.Hash, text string) string {
 	algorithm.Write([]byte(text))
 	return hex.EncodeToString(algorithm.Sum(nil))
@@ -79,6 +75,6 @@ func uint64Hasher(algorithm hash.Hash64, text string) uint64 {
 	return algorithm.Sum64()
 }
 
-func UUID() string{
+func UUID() string {
 	return generator.GenerateIdentifier()
 }

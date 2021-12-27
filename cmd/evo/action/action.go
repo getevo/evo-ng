@@ -12,27 +12,27 @@ import (
 	"path/filepath"
 )
 
-func CreateApp()  {
+func CreateApp() {
 	var wd = proc.WorkingDir()
 	files, err := ioutil.ReadDir(wd)
 	if err != nil {
 		proc.Die(err)
 	}
-	if len(files) > 0{
+	if len(files) > 0 {
 		proc.Die("directory is not empty")
 	}
 
 	var app = ng.Skeleton{}
 	app.App = filepath.Base(wd)
 	app.Version = ng.Version{
-		Auto: true,
+		Auto:  true,
 		Major: 0,
 		Minor: 0,
 	}
 
 	app.HotReload = true
 	app.Debug = true
-	app.Include = []ng.Include{}
+	app.Include = []string{}
 
 	app.Config = []string{
 		"./config.yml",
@@ -45,19 +45,17 @@ func CreateApp()  {
 		proc.Die(err)
 	}
 
-	err = file.Write(wd+"/app.json",buffer.Bytes())
-	if err != nil{
+	err = file.Write(wd+"/app.json", buffer.Bytes())
+	if err != nil {
 		proc.Die(err)
 	}
-
 
 	var config = evo.Config{}
-	var b,_ = yaml.Marshal(config.Default())
-	err = file.Write(wd+"/config.yml",b)
-	if err != nil{
+	var b, _ = yaml.Marshal(config.Default())
+	err = file.Write(wd+"/config.yml", b)
+	if err != nil {
 		proc.Die(err)
 	}
-
 
 	proc.Die()
 }

@@ -7,14 +7,12 @@
         "date": "0001-01-01T00:00:00Z"
     },
     "include": [
-        {
-            "repo": "github.com/getevo/evo-ng",
-            "branch": "master"
-        },
-        {
-            "local": "apps/myapp"
-        }
+        "apps/geoip",
+        "apps/myapp"
     ],
+    "replace": {
+        "github.com/getevo/evo-ng":"../../"
+    },
     "hot_reload": true,
     "debug": true,
     "config": [

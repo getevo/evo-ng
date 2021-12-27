@@ -151,16 +151,16 @@ func ReadFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
 }
 
-func Write(path string,content interface{}) error  {
-	if v,ok := content.(string); ok{
+func Write(path string, content interface{}) error {
+	if v, ok := content.(string); ok {
 		return os.WriteFile(path, []byte(v), 0644)
-	}else if v,ok := content.([]byte); ok{
+	} else if v, ok := content.([]byte); ok {
 		return os.WriteFile(path, v, 0644)
 	}
 	return fmt.Errorf("invalid content")
 }
 
-func Append(path string,content interface{}) error  {
+func Append(path string, content interface{}) error {
 	f, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
@@ -168,28 +168,28 @@ func Append(path string,content interface{}) error  {
 
 	defer f.Close()
 
-	if v,ok := content.(string); ok{
+	if v, ok := content.(string); ok {
 		_, err := f.WriteString(v)
 		return err
-	}else if v,ok := content.([]byte); ok{
+	} else if v, ok := content.([]byte); ok {
 		_, err := f.Write(v)
 		return err
 	}
 	return fmt.Errorf("invalid content")
 }
 
-func ParseJSON(path string,out interface{}) error  {
-	var b,err = ReadFile(path)
-	if err != nil{
+func ParseJSON(path string, out interface{}) error {
+	var b, err = ReadFile(path)
+	if err != nil {
 		return err
 	}
-	return json.Unmarshal(b,out)
+	return json.Unmarshal(b, out)
 }
 
-func WriteJSON(path string,input interface{}) error  {
-	var b,err = json.Marshal(input)
-	if err != nil{
+func WriteJSON(path string, input interface{}) error {
+	var b, err = json.Marshal(input)
+	if err != nil {
 		return err
 	}
-	return Write(path,b)
+	return Write(path, b)
 }

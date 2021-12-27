@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-
 type Build struct {
 	BinName     string
 	BuildArgs   []string
@@ -19,7 +18,7 @@ type Build struct {
 	Run         bool
 }
 
-func Watcher()  {
+func Watcher() {
 	fmt.Println("Hot Reload Mode")
 	cfg := Build{}
 	cfg.WorkingDir = gpath.WorkingDir()
