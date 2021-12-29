@@ -193,3 +193,11 @@ func WriteJSON(path string, input interface{}) error {
 	}
 	return Write(path, b)
 }
+
+func WritePrettyJSON(path string, input interface{}) error {
+	var b, err = json.MarshalIndent(input, "", "	")
+	if err != nil {
+		return err
+	}
+	return Write(path, b)
+}

@@ -39,20 +39,18 @@ func Start() {
 		generator.NewFuncSignature("main"),
 	)
 
-	/*	var newContext = generator.NewFunc(
-		nil,
-		generator.NewFuncSignature("main"),
-	)*/
-
 	main.Main = main.Main.AddStatements(
 		generator.NewComment("Register EVO"),
 		generator.NewRawStatement(`evo.Engine()`),
 		generator.NewNewline(),
 	)
-	if !file.IsFileExist(file.WorkingDir() + "/go.mod") {
+	if !file.IsFileExist("./go.mod") {
 		run("go", "mod", "init")
 	}
 
+	for src, dst := range skeleton.Replace {
+		run("go", "mod", "edit", "-replace", src+"="+dst)
+	}
 	f, err := os.Open(file.WorkingDir() + "/go.mod")
 	if err != nil {
 		proc.Die("unable to open go.mod")
@@ -68,10 +66,10 @@ func Start() {
 
 	var imports = []string{
 		"github.com/getevo/evo-ng",
-		skeleton.Module + "/request",
+		skeleton.Module + "/http",
 	}
 
-	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.UseContext(&request.Context{})"))
+	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.UseContext(&http.Context{})"))
 
 	for _, include := range skeleton.Include {
 
@@ -106,11 +104,8 @@ func Start() {
 	}
 	file.Write(file.WorkingDir()+"/main.go", generated)
 
-	for src, dst := range skeleton.Replace {
-		run("go", "mod", "edit", "-replace", src+"="+dst)
-	}
-
 	run("go", "mod", "vendor")
+
 	Watcher()
 }
 

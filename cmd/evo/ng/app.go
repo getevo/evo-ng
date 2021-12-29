@@ -2,14 +2,16 @@ package ng
 
 import (
 	"github.com/getevo/evo-ng/internal/file"
-	"github.com/getevo/evo-ng/internal/proc"
+	"github.com/getevo/evo/lib/log"
 )
 
 func GetSkeleton(path string) Skeleton {
 	var skeleton Skeleton
-	if err := file.ParseJSON(path, &skeleton); err != nil {
-		proc.Die(err)
+	var err = file.ParseJSON(path, &skeleton)
+	if err != nil {
+		log.Error(err)
 	}
+
 	skeleton.Packages = map[string]*Package{}
 	return skeleton
 }

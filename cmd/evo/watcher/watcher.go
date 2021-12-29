@@ -2,6 +2,8 @@ package watcher
 
 import (
 	"fmt"
+	"github.com/getevo/evo-ng/internal/file"
+	"github.com/getevo/evo/lib/gpath"
 	"go/build"
 	"io/ioutil"
 	"os"
@@ -12,7 +14,6 @@ import (
 	"time"
 )
 import "github.com/getevo/evo/lib/text"
-import "github.com/getevo/evo/lib/gpath"
 
 var mu sync.Mutex
 var files = map[string]int64{}
@@ -83,7 +84,7 @@ func firstScan(dir string, level int) {
 			//fmt.Println(path)
 			if info.IsDir() && path != src {
 				dirs[path] = true
-				if gpath.IsFileExist(path + ds + ".ignore") {
+				if file.IsFileExist(path + ds + ".ignore") {
 					continue
 				}
 				//fmt.Println(path)

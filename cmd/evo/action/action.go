@@ -25,7 +25,6 @@ func CreateApp() {
 	var app = ng.Skeleton{}
 	app.App = filepath.Base(wd)
 	app.Version = ng.Version{
-		Auto:  true,
 		Major: 0,
 		Minor: 0,
 	}

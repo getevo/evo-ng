@@ -17,8 +17,12 @@ import (
 // Cookie container wrapper struct
 type Cookie fiber.Cookie
 
-// Response to be done
+// Response represent formal form of response defined by evo
 type Response struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message,omitempty"`
+	Error   []error     `json:"error,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 // Cookie is used for getting a cookie value by key.
@@ -69,18 +73,18 @@ func (ctx *Context) Cookie(key string, value ...interface{}) string {
 // value will be join by semicolon in case of more than one
 // Returned value is only valid within the handler. Do not store any references.
 // Make copies or use the Immutable setting instead.
-func (ctx *Context) Header(key string, value ...string) string {
+func (c *Context) Header(key string, value ...string) string {
 	if len(value) > 0 {
-		ctx.fiber.Set(key, strings.Join(value, ";"))
+		c.FastHTTP().Response.Header.Set(key, strings.Join(value, ";"))
 	}
-	return ctx.fiber.Get(key)
+	return c.fiber.Get(key)
 }
 
 // Status sets the HTTP status for the response.
 // This method is chainable.
-func (ctx *Context) Status(status int) *Context {
-	ctx.fiber.Status(status)
-	return ctx
+func (c *Context) Status(status int) *Context {
+	c.FastHTTP().Response.SetStatusCode(status)
+	return c
 }
 
 // Query returns the query string parameter in the url.
@@ -231,6 +235,12 @@ func (c *Context) FormFile(key string) (*multipart.FileHeader, error) {
 	return c.fiber.FormFile(key)
 }
 
+// MultipartForm parse form entries from binary.
+// This returns a map[string][]string, so given a key the value will be a string slice.
+func (c *Context) MultipartForm() (*multipart.Form, error) {
+	return c.FastHTTP().MultipartForm()
+}
+
 // FastHTTP returns *fasthttp.RequestCtx that carries a deadline
 // a cancellation signal, and other values across API boundaries.
 func (c *Context) FastHTTP() *fasthttp.RequestCtx {
@@ -255,14 +265,14 @@ func (c *Context) SaveFile(fileheader *multipart.FileHeader, path string) error 
 
 // Secure returns a boolean property, that is true, if a TLS connection is established.
 func (c *Context) Secure() bool {
-	return c.fiber.Secure()
+	return c.FastHTTP().IsTLS()
 }
 
 // WriteBytes sets the HTTP response body without copying it.
 // From this point onward the body argument must not be changed.
 func (c *Context) WriteBytes(body []byte) {
 	// Write response body
-	c.fiber.Send(body)
+	c.FastHTTP().Response.SetBodyRaw(body)
 }
 
 // WriteString sets the HTTP response body without copying it.
@@ -303,32 +313,74 @@ func (c *Context) WriteJSON(body interface{}) {
 	}
 }
 
-func (ctx *Context) WriteResponse(data Response) {
-	ctx.WriteJSON(data)
+// WriteResponse writes json Response object to http response
+func (c *Context) WriteResponse(args ...interface{}) {
+	var resp = Response{}
+	var s = false
+	for _, arg := range args {
+		switch val := arg.(type) {
+		case string:
+			resp.Message = val
+		case error:
+			resp.Error = append(resp.Error, val)
+		case bool:
+			s = true
+			resp.Success = val
+		default:
+			resp.Data = val
+		}
+	}
+	if !s && (resp.Data != nil || resp.Message != "") {
+		resp.Success = true
+	}
+	c.WriteJSON(resp)
 }
 
-func (ctx *Context) Write(data interface{}) {
+// Write generic write function
+func (c *Context) Write(data interface{}) {
 	switch w := data.(type) {
 	case []byte:
-		ctx.fiber.Write(w)
+		c.fiber.Write(w)
 	case string:
-		ctx.fiber.Write([]byte(w))
+		c.fiber.Write([]byte(w))
 	case int, int64, int8, int32, int16, uint, uint64, uint8, uint16, uint32, float32, float64, complex64, complex128:
-		ctx.fiber.WriteString(fmt.Sprint(w))
+		c.fiber.WriteString(fmt.Sprint(w))
 	case error:
-		ctx.fiber.Status(400)
-		ctx.fiber.WriteString(w.Error())
+		c.fiber.Status(400)
+		c.fiber.WriteString(w.Error())
 	default:
 		var b, err = json.Marshal(w)
 		if err != nil {
-			ctx.fiber.Status(400)
-			ctx.fiber.WriteString(err.Error())
+			c.fiber.Status(400)
+			c.fiber.WriteString(err.Error())
 		} else {
-			ctx.fiber.Write(b)
+			c.fiber.Write(b)
 		}
 	}
 }
 
-func (ctx *Context) Fiber() *fiber.Ctx {
-	return ctx.fiber
+// Next executes the next method in the stack that matches the current route.
+func (c *Context) Next() error {
+	return c.fiber.Next()
+}
+
+// Fiber returns underlying fiber context
+func (c *Context) Fiber() *fiber.Ctx {
+	return c.fiber
+}
+
+type Router struct {
+	Prefix string
+}
+
+func Group(url string) Router {
+	return Router{
+		Prefix: url,
+	}
+}
+
+func (r Router) Group(url string) Router {
+	return Router{
+		Prefix: r.Prefix + url,
+	}
 }

@@ -11,6 +11,7 @@ type Context struct {
 
 func (context *Context) Extend() error {
 	context.Test = text.Random(10)
+	//fmt.Println("TEST")
 	return nil
 }
 

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
-	"runtime"
-	"strings"
 )
 
 // Builder is a interface for the build process
@@ -28,14 +26,6 @@ func NewBuilder(dir string, bin string, wd string, buildArgs []string) Builder {
 	// resolve bin name by current folder name
 	if bin == "" {
 		bin = filepath.Base(wd)
-	}
-
-	// does not work on Windows without the ".exe" extension
-	if runtime.GOOS == OSWindows {
-		// check if it already has the .exe extension
-		if !strings.HasSuffix(bin, ".exe") {
-			bin += ".exe"
-		}
 	}
 
 	return &builder{dir: dir, binary: bin, wd: wd, buildArgs: buildArgs}

@@ -1,10 +1,11 @@
 {
     "app": "sample",
     "version": {
-        "auto": true,
         "major": 0,
         "minor": 0,
-        "date": "0001-01-01T00:00:00Z"
+        "build": 4,
+        "hash": "0cf13506cd91bb36579e45c67c745cbbfd74bfb2d820fdd22fc65f94649e0467",
+        "date": "2021-12-29T03:18:06.4851329+01:00"
     },
     "include": [
         "apps/geoip",
