@@ -56,6 +56,7 @@ func (r *runner) Run() (*exec.Cmd, error) {
 	fmt.Println("Starting program")
 	fmt.Println("--------------------------------")
 	fmt.Println("")
+	r.args = os.Args[1:]
 	if r.command != nil && !r.Exited() {
 		return r.command, nil
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/getevo/evo-ng/internal/file"
 	"github.com/gofiber/fiber/v2"
+	"os"
 	"time"
 )
 
@@ -40,6 +41,26 @@ type AssetConfig fiber.Static
 type Handler func(*fiber.Ctx) error
 
 func Engine() {
+	Events.Register()
+	Events.On("exit", func() {
+		go func() {
+			var j = 7
+			for {
+				time.Sleep(1 * time.Second)
+				if j == 5 {
+					fmt.Println("Something prevents the app from graceful shutdown")
+				}
+				if j < 6 {
+					fmt.Printf("Force shutdown after %d seconds \n", j)
+				}
+				j--
+				if j == 0 {
+					os.Exit(1)
+				}
+			}
+		}()
+
+	})
 
 }
 
@@ -158,5 +179,9 @@ func Asset(url, localPath string, config ...AssetConfig) error {
 }
 
 func Run() {
-	app.Listen(":80")
+	Events.Trigger("ready")
+	var err = app.Listen(":80")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
