@@ -40,7 +40,13 @@ type Context struct {
 type AssetConfig fiber.Static
 type Handler func(*fiber.Ctx) error
 
+var Config = Configuration{}
+
 func Engine() {
+	var err = ParseConfig(&Config)
+	if err != nil {
+		panic(err)
+	}
 	Events.Register()
 	Events.On("exit", func() {
 		go func() {
@@ -178,9 +184,10 @@ func Asset(url, localPath string, config ...AssetConfig) error {
 	return nil
 }
 
-func Run() {
+func Run(ready func()) {
+	ready()
 	Events.Trigger("ready")
-	var err = app.Listen(":80")
+	var err = app.Listen(Config.WebServer.Bind + ":" + Config.WebServer.Port)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,11 +1,17 @@
 package evo
 
 import (
+	"fmt"
 	"github.com/creasty/defaults"
+	"github.com/getevo/evo-ng/internal/args"
+	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
+	"reflect"
 	"time"
 )
 
-type Config struct {
+type Configuration struct {
 	WebServer struct {
 		Bind                         string   `default:"0.0.0.0" yaml:"bind" json:"bind"`
 		Port                         string   `default:"8080" yaml:"port" json:"port"`
@@ -41,9 +47,75 @@ type Config struct {
 	} `yaml:"database" json:"database"`
 }
 
-func (c Config) Default() Config {
+func (c Configuration) Default() Configuration {
 	if err := defaults.Set(&c); err != nil {
 		panic(err)
 	}
 	return c
+}
+
+func ParseConfig(params ...interface{}) error {
+	var path = ""
+	var category = ""
+	var out int
+	for i, item := range params {
+		switch val := item.(type) {
+		case string:
+			if path == "" {
+				path = val
+			} else {
+				category = val
+			}
+		default:
+			if reflect.TypeOf(val).Kind() == reflect.Struct {
+				out = i
+			}
+		}
+
+	}
+
+	if path == "" {
+		if v := args.Get("-c"); v != "" {
+			path = v
+		} else {
+			path = "config.yml"
+		}
+	}
+
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("could not load config file at %s", path)
+	}
+	m := map[string]interface{}{}
+	err = yaml.Unmarshal(data, &m)
+	if err != nil {
+		return err
+	}
+	var toDecode interface{}
+	if category != "" {
+		if v, ok := m[category]; ok {
+			toDecode = v
+		} else {
+			return fmt.Errorf("cannot find %s in %s", category, path)
+		}
+	} else {
+		toDecode = m
+	}
+
+	cfg := &mapstructure.DecoderConfig{
+		Metadata:         nil,
+		Result:           &params[out],
+		TagName:          "yaml",
+		WeaklyTypedInput: true,
+	}
+	decoder, err := mapstructure.NewDecoder(cfg)
+	if err != nil {
+		return err
+	}
+	err = decoder.Decode(toDecode)
+	if err != nil {
+		return err
+	}
+	return nil
+
 }

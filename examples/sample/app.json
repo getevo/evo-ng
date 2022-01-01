@@ -3,13 +3,14 @@
     "version": {
         "major": 0,
         "minor": 0,
-        "build": 24,
-        "hash": "4bbee735fb3ee2896890115612d79919b20811267fc7fd35f508fc128650df4c",
-        "date": "2021-12-30T01:02:09.5813791+01:00"
+        "build": 43,
+        "hash": "af645e05948099930b2d186e937ac4abb018d465ceb493e78ac0900fc1cba817",
+        "date": "2022-01-01T03:17:39.758773+01:00"
     },
     "include": [
         "apps/geoip",
-        "apps/myapp"
+        "apps/myapp",
+        "apps/override"
     ],
     "replace": {
         "github.com/getevo/evo-ng":"../../"

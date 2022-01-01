@@ -49,7 +49,7 @@ func CreateApp() {
 		proc.Die(err)
 	}
 
-	var config = evo.Config{}
+	var config = evo.Configuration{}
 	var b, _ = yaml.Marshal(config.Default())
 	err = file.Write(wd+"/config.yml", b)
 	if err != nil {

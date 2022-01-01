@@ -27,5 +27,5 @@ database:
     params: ""
     max_open_connections: 0
     max_idle_connections: 0
-    connection_max_lifetime: 0s
+    connection_max_lifetime: 0
     connection_string: ""

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/getevo/evo-ng"
+	"github.com/getevo/evo-ng/internal/ds"
 	"github.com/getevo/evo-ng/internal/file"
 	"github.com/getevo/evo-ng/internal/proc"
 	"github.com/moznion/gowrtr/generator"
@@ -15,7 +16,9 @@ import (
 
 var skeleton Skeleton
 
-var main = Main{}
+var main = Main{
+	Events: *ds.NewOrderedMap(),
+}
 var ContextInterface = Function{
 	Name: "Extend",
 	Extend: Type{
@@ -26,13 +29,15 @@ var ContextInterface = Function{
 	},
 }
 
-var RegisterFunction = Function{
-	Name: "Register",
-}
-
 func Start() {
 	os.Remove("./go.mod")
 	skeleton = GetSkeleton("./app.json")
+
+	main.Events.Set("OverRide", generator.NewFunc(nil, generator.NewFuncSignature("OverRide")))
+	main.Events.Set("Register", generator.NewFunc(nil, generator.NewFuncSignature("Register")))
+	main.Events.Set("Ready", generator.NewFunc(nil, generator.NewFuncSignature("Ready")))
+	main.Events.Set("Router", generator.NewFunc(nil, generator.NewFuncSignature("Router")))
+
 	main.Root = generator.NewRoot()
 	main.Main = generator.NewFunc(
 		nil,
@@ -70,26 +75,37 @@ func Start() {
 	}
 
 	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.UseContext(&http.Context{})"))
-
+	var imported = map[string]bool{}
 	for _, include := range skeleton.Include {
-
-		var pkg = skeleton.GetPackage(include)
-		if pkg.HasFunction(RegisterFunction) {
-			main.Main = main.Main.AddStatements(
-				generator.NewComment("Register "+include),
-				generator.NewRawStatement("evo.Register("+pkg.Name+`.Register)`),
-				generator.NewNewline(),
-			)
-			if pkg.IsLocal {
-				imports = append(imports, skeleton.Module+"/"+include)
-			} else {
-				imports = append(imports, strings.Split(include, "@")[0])
+		for _, event := range main.Events.Keys() {
+			var pkg = skeleton.GetPackage(include)
+			if pkg.HasFunction(Function{Name: fmt.Sprint(event)}) {
+				fn, _ := main.Events.Get(event)
+				fn = fn.(*generator.Func).AddStatements(
+					generator.NewRawStatement("evo.Register(" + pkg.Name + `.` + fmt.Sprint(event) + `)`),
+					//generator.NewNewline(),
+				)
+				main.Events.Set(event, fn)
+				if _, ok := imported[include]; !ok {
+					if pkg.IsLocal {
+						imports = append(imports, skeleton.Module+"/"+include)
+					} else {
+						imports = append(imports, strings.Split(include, "@")[0])
+					}
+					imported[include] = true
+				}
 			}
 		}
 
 	}
 
-	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.Run()"))
+	main.Main = main.Main.AddStatements(
+		generator.NewRawStatement("OverRide()"),
+		generator.NewRawStatement("Register()"),
+		generator.NewRawStatement("Router()"),
+	)
+
+	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.Run(Ready)"))
 
 	main.Root = main.Root.AddStatements(
 		generator.NewPackage("main"),
@@ -97,7 +113,10 @@ func Start() {
 		generator.NewImport(imports...),
 		generator.NewNewline(),
 	).AddStatements(main.Main)
-
+	for _, event := range main.Events.Keys() {
+		fn, _ := main.Events.Get(event)
+		main.Root = main.Root.AddStatements(fn.(*generator.Func))
+	}
 	generated, err := main.Root.Generate(0)
 	if err != nil {
 		evo.Panic(err)

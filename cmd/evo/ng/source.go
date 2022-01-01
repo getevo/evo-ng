@@ -325,17 +325,17 @@ func getType(input ast.Expr, pkg string) Type {
 	return t
 }
 
-func (p Package) HasFunction(fn Function) bool {
+func (p Package) HasFunction(in Function) bool {
 	for _, fn := range p.Functions {
-		if fn.Name == fn.Name {
-			for _, src := range fn.Input {
+		if fn.Name == in.Name {
+			for _, src := range in.Input {
 				for _, dst := range fn.Input {
 					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
 						return false
 					}
 				}
 			}
-			for _, src := range fn.Result {
+			for _, src := range in.Result {
 				for _, dst := range fn.Result {
 					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
 						return false

@@ -10,8 +10,10 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
+	github.com/mitchellh/mapstructure v1.4.1
 	github.com/moznion/gowrtr v1.5.1
 	github.com/otiai10/copy v1.7.0
+	github.com/tidwall/gjson v1.12.1
 	github.com/tidwall/sjson v1.2.4
 	github.com/valyala/fasthttp v1.21.0
 	golang.org/x/mod v0.3.0
@@ -34,7 +36,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

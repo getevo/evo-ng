@@ -9,6 +9,12 @@ import (
 func Register() error {
 	fmt.Println("hello!")
 	fmt.Println(os.Args[1:])
+	return nil
+}
+
+var group = http.Group("/a")
+
+func Routers() error {
 	http.Get("/", func(context *http.Context) error {
 		context.WriteResponse("Hey!")
 		return nil
@@ -20,11 +26,15 @@ func Register() error {
 	})
 	http.Asset("/asset", "./assets")
 
-	group := http.Group("/a")
-
 	group.Get("/b", func(context *http.Context) error {
+		fmt.Println("something reaches here")
 		context.WriteResponse("Hey")
 		return nil
 	})
+
 	return nil
+}
+
+func Ready() {
+
 }

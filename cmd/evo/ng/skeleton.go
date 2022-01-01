@@ -2,6 +2,7 @@ package ng
 
 import (
 	"github.com/getevo/evo-ng"
+	"github.com/getevo/evo-ng/internal/ds"
 	"github.com/getevo/evo-ng/internal/file"
 	"github.com/moznion/gowrtr/generator"
 	"strings"
@@ -179,4 +180,5 @@ type Main struct {
 	Root             *generator.Root
 	ContextInterface Function
 	Main             *generator.Func
+	Events           ds.OrderedMap
 }
