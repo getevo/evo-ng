@@ -3,9 +3,9 @@
     "version": {
         "major": 0,
         "minor": 0,
-        "build": 65,
-        "hash": "6a4acedd61870017fc8fc61958cc114752c28cb0a8b15c402bc9ebeffcd74c17",
-        "date": "2022-01-04T02:52:28.4488771+01:00"
+        "build": 81,
+        "hash": "b673ceca06c1d18a6829dca6d4372c2a98ea16cd6241883cf2517e114f295c86",
+        "date": "2022-01-04T04:29:50.4980525+01:00"
     },
     "include": [
         "apps/geoip",
@@ -13,7 +13,9 @@
         "apps/override",
         "github.com/getevo/evo-ng/apps/message"
     ],
-
+    "replace": {
+        "github.com/getevo/evo-ng":"../../"
+    },
     "hot_reload": true,
     "debug": true,
     "config": [

@@ -328,18 +328,20 @@ func getType(input ast.Expr, pkg string) Type {
 func (p Package) HasFunction(in Function) bool {
 	for _, fn := range p.Functions {
 		if fn.Name == in.Name {
-			for _, src := range in.Input {
-				for _, dst := range fn.Input {
-					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
-						return false
-					}
+			if len(in.Input) != len(fn.Input) || len(in.Result) != len(fn.Result) {
+				return false
+			}
+
+			for k, src := range in.Input {
+				var dst = fn.Input[k]
+				if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
+					return false
 				}
 			}
-			for _, src := range in.Result {
-				for _, dst := range fn.Result {
-					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
-						return false
-					}
+			for k, src := range in.Result {
+				var dst = fn.Result[k]
+				if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
+					return false
 				}
 			}
 			return true
@@ -348,21 +350,23 @@ func (p Package) HasFunction(in Function) bool {
 	return false
 }
 
-func (s Struct) HasFunction(fn Function) bool {
+func (s Struct) HasFunction(in Function) bool {
 	for _, fn := range s.Functions {
-		if fn.Name == fn.Name && fn.Extend.IsPtr == fn.Extend.IsPtr {
-			for _, src := range fn.Input {
-				for _, dst := range fn.Input {
-					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
-						return false
-					}
+		if fn.Name == in.Name && fn.Extend.IsPtr == in.Extend.IsPtr {
+			if len(in.Input) != len(fn.Input) || len(in.Result) != len(fn.Result) {
+				return false
+			}
+
+			for k, src := range in.Input {
+				var dst = fn.Input[k]
+				if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
+					return false
 				}
 			}
-			for _, src := range fn.Result {
-				for _, dst := range fn.Result {
-					if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
-						return false
-					}
+			for k, src := range in.Result {
+				var dst = fn.Result[k]
+				if src.IsPtr != dst.IsPtr || src.Pkg != dst.Pkg || src.Struct != dst.Struct {
+					return false
 				}
 			}
 			return true

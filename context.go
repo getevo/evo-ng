@@ -66,7 +66,7 @@ func (ctx *Context) Cookie(key string, value ...interface{}) string {
 			case int, int64, int8, int32, int16, uint, uint64, uint8, uint16, uint32, float32, float64, complex64, complex128:
 				cookie.Value = fmt.Sprint(val)
 			default:
-				var b, err = json.Marshal(value)
+				var b, err = json.Marshal(val)
 				if err != nil {
 					log.Error(err)
 				} else {

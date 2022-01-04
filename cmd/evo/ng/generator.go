@@ -30,7 +30,8 @@ var ContextInterface = Function{
 	Input: []Type{
 		{
 			IsPtr:  true,
-			Struct: "evo.Context",
+			Pkg:    "evo",
+			Struct: "Context",
 		},
 	},
 }
@@ -85,7 +86,7 @@ func Start() {
 	for _, include := range skeleton.Include {
 		for _, event := range main.Events.Keys() {
 			var pkg = skeleton.GetPackage(include)
-			if pkg.HasFunction(Function{Name: fmt.Sprint(event)}) {
+			if pkg.HasFunction(Function{Name: fmt.Sprint(event), Result: []Type{{Struct: "error"}}}) {
 				fn, _ := main.Events.Get(event)
 				fn = fn.(*generator.Func).AddStatements(
 					generator.NewRawStatement("evo.Register(" + pkg.Name + `.` + fmt.Sprint(event) + `)`),

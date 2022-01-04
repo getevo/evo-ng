@@ -34,14 +34,15 @@ func (s *Skeleton) GenContext() {
 		var pkg = skeleton.GetPackage(include)
 		var imp = false
 		for _, comment := range pkg.Comments {
-			var fields = strings.Fields(comment)
+			var fields = strings.Fields(strings.TrimLeft(comment, "//"))
+
 			if len(fields) == 4 && strings.ToLower(fields[1]) == "extend" && strings.ToLower(fields[3]) == "context" {
+
 				for _, decl := range pkg.Structs {
 					if decl.HasFunction(ContextInterface) {
 						context = context.AddField(fields[2], pkg.Name+"."+decl.Name)
 						imp = true
 						statements = append(statements, generator.NewRawStatement("c."+fields[2]+".Extend(request)"))
-						//decl.Name+".Extend(request)",
 					}
 				}
 			}

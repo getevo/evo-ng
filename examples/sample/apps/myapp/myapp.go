@@ -10,7 +10,7 @@ import (
 func Register() error {
 	fmt.Println("hello!")
 	fmt.Println(os.Args[1:])
-	evo.RegisterView("myapp","./apps/myapp/views")
+	evo.RegisterView("myapp", "./apps/myapp/views")
 	return nil
 }
 
@@ -35,10 +35,10 @@ func Router() error {
 	})
 
 	http.Get("/view", func(context *http.Context) error {
-		context.N
-		return context.View("myapp","test","name","John Doe",map[string]interface{}{
-			"a":"A",
-			"b":"B",
+		context.Message.Error("Test error")
+		return context.View("myapp", "test", "name", "John Doe", map[string]interface{}{
+			"a": "A",
+			"b": "B",
 		})
 	})
 	return nil
