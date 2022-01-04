@@ -39,13 +39,20 @@ func (b *builder) Binary() string {
 // Build the Golang project set for this builder
 func (b *builder) Build() error {
 	fmt.Println("Building program")
+	var command = exec.Command("go", "mod", "vendor")
+	command.Dir = b.dir
+	output, err := command.CombinedOutput()
+	if !command.ProcessState.Success() {
+		return fmt.Errorf("error building: %s", output)
+	}
+
 	args := append([]string{"go", "build", "-o", filepath.Join(b.wd, b.binary)}, b.buildArgs...)
 	fmt.Println("Build command", args)
 
-	command := exec.Command(args[0], args[1:]...) // nolint gas
+	command = exec.Command(args[0], args[1:]...) // nolint gas
 	command.Dir = b.dir
 
-	output, err := command.CombinedOutput()
+	output, err = command.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("build failed with %v\n%s", err, output)
 	}

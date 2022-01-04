@@ -13,6 +13,7 @@ const (
 	INFO    Type = "info"
 )
 
+// Type helper
 type Type string
 
 // Message contains message type and text
@@ -27,6 +28,10 @@ type Context struct {
 	messages []Message
 }
 
+// Message creates flash message
+//  @receiver c
+//  @param typ
+//  @param message
 func (c *Context) Message(typ Type, message string) {
 	if len(c.messages) == 0 {
 		var err = json.Unmarshal([]byte(c.request.Cookie("message")), &c.messages)
@@ -34,6 +39,7 @@ func (c *Context) Message(typ Type, message string) {
 			c.messages = []Message{}
 		}
 	}
+
 	var found = false
 	for _, item := range c.messages {
 		if typ == item.Type && item.Message == message {
@@ -47,6 +53,9 @@ func (c *Context) Message(typ Type, message string) {
 	}
 }
 
+// GetMessages returns list of flash messages
+//  @receiver c
+//  @return []Message
 func (c *Context) GetMessages() []Message {
 	if len(c.messages) == 0 {
 		json.Unmarshal([]byte(c.request.Cookie("message")), &c.messages)
@@ -54,29 +63,48 @@ func (c *Context) GetMessages() []Message {
 	return c.messages
 }
 
+// Flush flash messages
+//  @receiver c
+//  @return []Message
 func (c *Context) Flush() []Message {
 	c.request.ClearCookie("message")
 	c.messages = []Message{}
 	return c.messages
 }
 
+// Extend parse request
+//  @receiver context
+//  @param request
+//  @return error
 func (context *Context) Extend(request *evo.Context) error {
 	context.request = request
 	return nil
 }
 
+// Error set flash error message
+//  @receiver c
+//  @param message
 func (c *Context) Error(message string) {
 	c.Message(ERROR, message)
 }
 
+// Info set flash info message
+//  @receiver c
+//  @param message
 func (c *Context) Info(message string) {
 	c.Message(INFO, message)
 }
 
+// Warning set flash warning message
+//  @receiver c
+//  @param message
 func (c *Context) Warning(message string) {
 	c.Message(WARNING, message)
 }
 
+// Success set flash success message
+//  @receiver c
+//  @param message
 func (c *Context) Success(message string) {
 	c.Message(SUCCESS, message)
 }
