@@ -27,6 +27,12 @@ var ContextInterface = Function{
 	Result: []Type{
 		{Struct: "error"},
 	},
+	Input: []Type{
+		{
+			IsPtr:  true,
+			Struct: "evo.Context",
+		},
+	},
 }
 
 func Start() {

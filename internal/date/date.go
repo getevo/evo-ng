@@ -51,7 +51,7 @@ func (d *Date) Calculate(expr string) (*Date, error) {
 		return d, fmt.Errorf("unable to parse date expression:%s", expr)
 	}
 	var i int
-	if fields[0] == "next" {
+	if fields[0] == "message" {
 		i = 1
 	} else if fields[0] == "last" {
 		i = 2

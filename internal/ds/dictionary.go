@@ -107,7 +107,7 @@ func newElement(e *list.Element) *Pair {
 	}
 }
 
-// Next returns the next element, or nil if it finished.
+// Next returns the message element, or nil if it finished.
 func (e *Pair) Next() *Pair {
 	return newElement(e.element.Next())
 }

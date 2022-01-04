@@ -15,49 +15,49 @@ import (
 // FNV32 hashes using fnv32 algorithm
 func FNV32(v interface{}) uint32 {
 	algorithm := fnv.New32()
-	return uint32Hasher(algorithm, generic.String(v))
+	return uint32Hasher(algorithm, generic.Parse(v).String())
 }
 
 // FNV32a hashes using fnv32a algorithm
 func FNV32a(v interface{}) uint32 {
 	algorithm := fnv.New32a()
-	return uint32Hasher(algorithm, generic.String(v))
+	return uint32Hasher(algorithm, generic.Parse(v).String())
 }
 
 // FNV64 hashes using fnv64 algorithm
 func FNV64(v interface{}) uint64 {
 	algorithm := fnv.New64()
-	return uint64Hasher(algorithm, generic.String(v))
+	return uint64Hasher(algorithm, generic.Parse(v).String())
 }
 
 // FNV64a hashes using fnv64a algorithm
 func FNV64a(v interface{}) uint64 {
 	algorithm := fnv.New64a()
-	return uint64Hasher(algorithm, generic.String(v))
+	return uint64Hasher(algorithm, generic.Parse(v).String())
 }
 
 // MD5 hashes using md5 algorithm
 func MD5(v interface{}) string {
 	algorithm := md5.New()
-	return stringHasher(algorithm, generic.String(v))
+	return stringHasher(algorithm, generic.Parse(v).String())
 }
 
 // SHA1 hashes using sha1 algorithm
 func SHA1(v interface{}) string {
 	algorithm := sha1.New()
-	return stringHasher(algorithm, generic.String(v))
+	return stringHasher(algorithm, generic.Parse(v).String())
 }
 
 // SHA256 hashes using sha256 algorithm
 func SHA256(v interface{}) string {
 	algorithm := sha256.New()
-	return stringHasher(algorithm, generic.String(v))
+	return stringHasher(algorithm, generic.Parse(v).String())
 }
 
 // SHA512 hashes using sha512 algorithm
 func SHA512(v interface{}) string {
 	algorithm := sha512.New()
-	return stringHasher(algorithm, generic.String(v))
+	return stringHasher(algorithm, generic.Parse(v).String())
 }
 
 func stringHasher(algorithm hash.Hash, text string) string {

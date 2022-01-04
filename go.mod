@@ -3,6 +3,8 @@ module github.com/getevo/evo-ng
 go 1.17
 
 require (
+	github.com/CloudyKit/jet v2.1.2+incompatible
+	github.com/CloudyKit/jet/v6 v6.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde
 	github.com/creasty/defaults v1.5.2
@@ -21,6 +23,7 @@ require (
 )
 
 require (
+	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect

@@ -40,7 +40,7 @@ func (s *Skeleton) GenContext() {
 					if decl.HasFunction(ContextInterface) {
 						context = context.AddField(fields[2], pkg.Name+"."+decl.Name)
 						imp = true
-						statements = append(statements, generator.NewRawStatement("c."+fields[2]+".Extend()"))
+						statements = append(statements, generator.NewRawStatement("c."+fields[2]+".Extend(request)"))
 						//decl.Name+".Extend(request)",
 					}
 				}
