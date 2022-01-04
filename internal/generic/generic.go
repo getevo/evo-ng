@@ -40,21 +40,29 @@ const (
 	UnsafePointer
 )
 
+// Parse parse input
+//  @param i
+//  @return Value
 func Parse(i interface{}) Value {
 	return Value{
 		Input: i,
 	}
 }
 
+// Type internal structure to keep input and its type
 type Type struct {
 	input interface{}
 	iType reflect.Type
 }
 
+// Value wraps over interface
 type Value struct {
 	Input interface{}
 }
 
+// IsNil returns if the value is nil
+//  @receiver v
+//  @return bool
 func (v Value) IsNil() bool {
 	return !reflect.ValueOf(v.Input).IsValid()
 }
@@ -70,31 +78,58 @@ func (v Value) direct() interface{} {
 	return v.Input
 }
 
+// ParseJSON parse json value into struct
+//  @receiver v
+//  @param in
+//  @return error
+func (v Value) ParseJSON(in interface{}) error {
+	var value = v.direct()
+	return json.Unmarshal([]byte(fmt.Sprint(value)), in)
+}
+
+// String return value as string
+//  @receiver v
+//  @return string
 func (v Value) String() string {
 	var value = v.direct()
 	return fmt.Sprint(value)
 }
 
+// Int return value as integer
+//  @receiver v
+//  @return int
 func (v Value) Int() int {
 	i, _ := strconv.Atoi(v.String())
 	return i
 }
 
+// Uint64 return value as uint64
+//  @receiver v
+//  @return uint64
 func (v Value) Uint64() uint64 {
 	i, _ := strconv.ParseUint(v.String(), 0, 64)
 	return i
 }
 
+// Int64 return value as int64
+//  @receiver v
+//  @return int64
 func (v Value) Int64() int64 {
 	i, _ := strconv.ParseInt(v.String(), 0, 64)
 	return i
 }
 
+// Float return value as float64
+//  @receiver v
+//  @return float64
 func (v Value) Float() float64 {
 	i, _ := strconv.ParseFloat(v.String(), 64)
 	return i
 }
 
+// Bool return value as bool
+//  @receiver v
+//  @return bool
 func (v Value) Bool() bool {
 	var s = strings.ToLower(v.String())
 	if len(s) > 0 {
@@ -105,14 +140,25 @@ func (v Value) Bool() bool {
 	return false
 }
 
+// Time return value as time.Time
+//  @receiver v
+//  @return time.Time
+//  @return error
 func (v Value) Time() (time.Time, error) {
 	return dateparse.ParseAny(v.String())
 }
 
+// Duration return value as time.Duration
+//  @receiver v
+//  @return time.Duration
+//  @return error
 func (v Value) Duration() (time.Duration, error) {
 	return time.ParseDuration(v.String())
 }
 
+// ToString cast anything to string
+//  @param v
+//  @return string
 func ToString(v interface{}) string {
 	ref := reflect.ValueOf(v)
 	if !ref.IsValid() {
@@ -138,6 +184,9 @@ func ToString(v interface{}) string {
 	}
 }
 
+// TypeOf return type of input
+//  @param input
+//  @return *Type
 func TypeOf(input interface{}) *Type {
 	var el = Type{
 		input: input,
@@ -146,6 +195,10 @@ func TypeOf(input interface{}) *Type {
 	return &el
 }
 
+// Is checks if input and given type are equal
+//  @receiver t
+//  @param input
+//  @return bool
 func (t *Type) Is(input interface{}) bool {
 	switch v := input.(type) {
 	case reflect.Kind:
@@ -156,6 +209,9 @@ func (t *Type) Is(input interface{}) bool {
 	return TypeOf(input).iType.String() == t.iType.String()
 }
 
+// Indirect get type of object considering if it is pointer
+//  @receiver t
+//  @return *Type
 func (t *Type) Indirect() *Type {
 	if t.Is(reflect.Ptr) {
 		var el = Type{

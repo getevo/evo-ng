@@ -1,7 +1,6 @@
 package message
 
 import (
-	"encoding/json"
 	"github.com/getevo/evo-ng"
 	"time"
 )
@@ -34,7 +33,7 @@ type Context struct {
 //  @param message
 func (c *Context) Message(typ Type, message string) {
 	if len(c.messages) == 0 {
-		var err = json.Unmarshal([]byte(c.request.Cookie("message")), &c.messages)
+		var err = c.request.Cookie("message").ParseJSON(&c.messages)
 		if err != nil {
 			c.messages = []Message{}
 		}
@@ -58,7 +57,7 @@ func (c *Context) Message(typ Type, message string) {
 //  @return []Message
 func (c *Context) GetMessages() []Message {
 	if len(c.messages) == 0 {
-		json.Unmarshal([]byte(c.request.Cookie("message")), &c.messages)
+		c.request.Cookie("message").ParseJSON(&c.messages)
 	}
 	return c.messages
 }

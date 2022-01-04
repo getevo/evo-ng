@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
+	"github.com/getevo/evo-ng/internal/generic"
 	"github.com/getevo/evo-ng/internal/shared"
 	"github.com/getevo/evo/lib/log"
 	"github.com/gofiber/fiber/v2"
@@ -30,6 +31,7 @@ type Response struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+// URL describe url
 type URL struct {
 	Query  url.Values
 	Host   string
@@ -44,7 +46,7 @@ type URL struct {
 // value accepts time.Time,time.Duration as expiration time of cookie
 // value accepts fiber.Cookie,request.Cookie as custom cookie settings
 // Make copies or use the Immutable setting to use the value outside the Handler.
-func (ctx *Context) Cookie(key string, value ...interface{}) string {
+func (ctx *Context) Cookie(key string, value ...interface{}) generic.Value {
 	if len(value) > 0 {
 		var cookie = fiber.Cookie{}
 		for _, item := range value {
@@ -78,7 +80,7 @@ func (ctx *Context) Cookie(key string, value ...interface{}) string {
 		cookie.Name = key
 		ctx.fiber.Cookie(&cookie)
 	}
-	return ctx.fiber.Cookies(key)
+	return generic.Parse(ctx.fiber.Cookies(key))
 }
 
 // Header set/get the HTTP request header specified by field and value.
@@ -95,6 +97,9 @@ func (c *Context) Header(key string, value ...string) string {
 
 // Status sets the HTTP status for the response.
 // This method is chainable.
+//  @receiver c
+//  @param status
+//  @return *Context
 func (c *Context) Status(status int) *Context {
 	c.FastHTTP().Response.SetStatusCode(status)
 	return c
@@ -105,11 +110,17 @@ func (c *Context) Status(status int) *Context {
 // If a default value is given, it will return that value if the query doesn't exist.
 // Returned value is only valid within the handler. Do not store any references.
 // Make copies or use the Immutable setting to use the value outside the Handler.
+//  @receiver ctx
+//  @param key
+//  @param defaultValue
+//  @return string
 func (ctx *Context) Query(key string, defaultValue ...string) string {
 	return ctx.fiber.Query(key, defaultValue...)
 }
 
 // Protocol contains the request protocol string: http or https for TLS requests.
+//  @receiver ctx
+//  @return string
 func (ctx *Context) Protocol() string {
 	return ctx.fiber.Protocol()
 }
@@ -117,45 +128,67 @@ func (ctx *Context) Protocol() string {
 // Hostname contains the hostname derived from the Host HTTP header.
 // Returned value is only valid within the handler. Do not store any references.
 // Make copies or use the Immutable setting instead.
+//  @receiver c
+//  @return string
 func (c *Context) Hostname() string {
 	return c.fiber.Hostname()
 }
 
 // IPs returns an string slice of IP addresses specified in the X-Forwarded-For request header.
+//  @receiver c
+//  @return ips
 func (c *Context) IPs() (ips []string) {
 	return c.fiber.IPs()
 }
 
 // Is returns the matching content type,
 // if the incoming request's Content-Type HTTP header field matches the MIME type specified by the type parameter
+//  @receiver c
+//  @param extension
+//  @return bool
 func (c *Context) Is(extension string) bool {
 	return c.fiber.Is(extension)
 }
 
 // Locals makes it possible to pass interface{} values under string keys scoped to the request
 // and therefore available to all following routes that match the request.
-func (c *Context) Locals(key string, value ...interface{}) (val interface{}) {
-	return c.fiber.Locals(key, value...)
+//  @receiver c
+//  @param key
+//  @param value
+//  @return generic.Value
+func (c *Context) Locals(key string, value ...interface{}) generic.Value {
+	return generic.Parse(c.fiber.Locals(key, value...))
 }
 
 // Location sets the response Location HTTP header to the specified path parameter.
+//  @receiver c
+//  @param path
 func (c *Context) Location(path string) {
 	c.fiber.Location(path)
 }
 
 // Redirect to the URL derived from the specified path, with specified status.
 // If status is not specified, status defaults to 302 Found.
+//  @receiver c
+//  @param location
+//  @param status
 func (c *Context) Redirect(location string, status ...int) {
 	c.fiber.Redirect(location, status...)
 }
 
 // Method contains a string corresponding to the HTTP method of the request: GET, POST, PUT and so on.
+//  @receiver c
+//  @param override
+//  @return string
 func (c *Context) Method(override ...string) string {
 	return c.fiber.Method()
 }
 
 // Subdomains returns a string slice of subdomains in the domain name of the request.
 // The subdomain offset, which defaults to 2, is used for determining the beginning of the subdomain segments.
+//  @receiver c
+//  @param offset
+//  @return []string
 func (c *Context) Subdomains(offset ...int) []string {
 	o := 2
 	if len(offset) > 0 {
@@ -218,6 +251,9 @@ func (c *Context) Download(file string, filename ...string) error {
 	return c.fiber.Download(file, filename...)
 }
 
+// Fresh check if this request is fresh and is not beign cached
+//  @receiver c
+//  @return bool
 func (c *Context) Fresh() bool {
 	return c.fiber.Fresh()
 }
@@ -225,11 +261,15 @@ func (c *Context) Fresh() bool {
 // Request return the *fasthttp.Request object
 // This allows you to use all fasthttp request methods
 // https://godoc.org/github.com/valyala/fasthttp#Request
+//  @receiver c
+//  @return *fasthttp.Request
 func (c *Context) Request() *fasthttp.Request {
 	return c.fiber.Request()
 }
 
 // Response return the *fasthttp.Response object
+//  @receiver c
+//  @return *fasthttp.Response
 // This allows you to use all fasthttp response methods
 // https://godoc.org/github.com/valyala/fasthttp#Response
 func (c *Context) Response() *fasthttp.Response {
@@ -237,6 +277,9 @@ func (c *Context) Response() *fasthttp.Response {
 }
 
 // Format performs content-negotiation on the Accept HTTP header.
+//  @receiver c
+//  @param body
+//  @return error
 // It uses Accepts to select a proper format.
 // If the header is not specified or there is no proper format, text/plain is used.
 func (c *Context) Format(body interface{}) error {
@@ -244,45 +287,66 @@ func (c *Context) Format(body interface{}) error {
 }
 
 // FormFile returns the first file by key from a MultipartForm.
+//  @receiver c
+//  @param key
+//  @return *multipart.FileHeader
+//  @return error
 func (c *Context) FormFile(key string) (*multipart.FileHeader, error) {
 	return c.fiber.FormFile(key)
 }
 
 // MultipartForm parse form entries from binary.
 // This returns a map[string][]string, so given a key the value will be a string slice.
+//  @receiver c
+//  @return *multipart.Form
+//  @return error
 func (c *Context) MultipartForm() (*multipart.Form, error) {
 	return c.FastHTTP().MultipartForm()
 }
 
 // FastHTTP returns *fasthttp.RequestCtx that carries a deadline
 // a cancellation signal, and other values across API boundaries.
+//  @receiver c
+//  @return *fasthttp.RequestCtx
 func (c *Context) FastHTTP() *fasthttp.RequestCtx {
 	return c.fiber.Context()
 }
 
 // XHR returns a Boolean property, that is true, if the request's X-Requested-With header field is XMLHttpRequest,
 // indicating that the request was issued by a client library (such as jQuery).
+//  @receiver c
+//  @return bool
 func (c *Context) XHR() bool {
 	return c.fiber.XHR()
 }
 
 // Route returns the matched Route struct.
+//  @receiver c
+//  @return *fiber.Route
 func (c *Context) Route() *fiber.Route {
 	return c.fiber.Route()
 }
 
 // SaveFile saves any multipart file to disk.
+//  @receiver c
+//  @param fileheader
+//  @param path
+//  @return error
 func (c *Context) SaveFile(fileheader *multipart.FileHeader, path string) error {
 	return fasthttp.SaveMultipartFile(fileheader, path)
 }
 
 // Secure returns a boolean property, that is true, if a TLS connection is established.
+//  @receiver c
+//  @return bool
 func (c *Context) Secure() bool {
 	return c.FastHTTP().IsTLS()
 }
 
 // WriteBytes sets the HTTP response body without copying it.
 // From this point onward the body argument must not be changed.
+//  @receiver c
+//  @param body
 func (c *Context) WriteBytes(body []byte) {
 	// Write response body
 	c.FastHTTP().Response.SetBodyRaw(body)
@@ -290,6 +354,8 @@ func (c *Context) WriteBytes(body []byte) {
 
 // WriteString sets the HTTP response body without copying it.
 // From this point onward the body argument must not be changed.
+//  @receiver c
+//  @param body
 func (c *Context) WriteString(body string) {
 	// Write response body
 	c.fiber.Send([]byte(body))
@@ -298,23 +364,36 @@ func (c *Context) WriteString(body string) {
 // SendFile transfers the file from the given path.
 // The file is not compressed by default, enable this by passing a 'true' argument
 // Sets the Content-Type response HTTP header field based on the filenames extension.
+//  @receiver c
+//  @param file
+//  @param compress
+//  @return error
 func (c *Context) SendFile(file string, compress ...bool) error {
 	return c.fiber.SendFile(file, compress...)
 }
 
 // SendStatus sets the HTTP status code and if the response body is empty,
 // it sets the correct status message in the body.
+//  @receiver c
+//  @param status
+//  @return error
 func (c *Context) SendStatus(status int) error {
 	return c.fiber.SendStatus(status)
 }
 
 // SendStream sets response body stream and optional body size.
+//  @receiver c
+//  @param stream
+//  @param size
+//  @return error
 func (c *Context) SendStream(stream io.Reader, size ...int) error {
 	return c.fiber.SendStream(stream, size...)
 }
 
 // WriteJSON sets the HTTP response body without copying it.
 // From this point onward the body argument must not be changed.
+//  @receiver c
+//  @param body
 func (c *Context) WriteJSON(body interface{}) {
 	// Write response body
 	var b, err = json.Marshal(body)
@@ -327,6 +406,8 @@ func (c *Context) WriteJSON(body interface{}) {
 }
 
 // WriteResponse writes json Response object to http response
+//  @receiver c
+//  @param args
 func (c *Context) WriteResponse(args ...interface{}) {
 	var resp = Response{}
 	var s = false
@@ -350,6 +431,8 @@ func (c *Context) WriteResponse(args ...interface{}) {
 }
 
 // Write generic write function
+//  @receiver c
+//  @param data
 func (c *Context) Write(data interface{}) {
 	switch w := data.(type) {
 	case []byte:
@@ -373,31 +456,49 @@ func (c *Context) Write(data interface{}) {
 }
 
 // Next executes the message method in the stack that matches the current route.
+//  @receiver c
+//  @return error
 func (c *Context) Next() error {
 	return c.fiber.Next()
 }
 
 // Fiber returns underlying fiber context
+//  @receiver c
+//  @return *fiber.Ctx
 func (c *Context) Fiber() *fiber.Ctx {
 	return c.fiber
 }
 
+// Router keep prefix of the path group
 type Router struct {
 	Prefix string
 }
 
+// Group create group of routers
+//  @param url
+//  @return Router
 func Group(url string) Router {
 	return Router{
 		Prefix: url,
 	}
 }
 
+// Group create group of routers
+//  @receiver r
+//  @param url
+//  @return Router
 func (r Router) Group(url string) Router {
 	return Router{
 		Prefix: r.Prefix + url,
 	}
 }
 
+// View render a view into output
+//  @receiver c
+//  @param env
+//  @param view
+//  @param data
+//  @return error
 func (c *Context) View(env, view string, data ...interface{}) error {
 	var vars = jet.VarMap{}
 	if e, ok := shared.Views[env]; ok {
@@ -434,6 +535,9 @@ func (c *Context) View(env, view string, data ...interface{}) error {
 	return fmt.Errorf("invalid environment %s", env)
 }
 
+// URL parse parts of the url
+//  @receiver c
+//  @return *URL
 func (c *Context) URL() *URL {
 	u := URL{}
 	var fiber = c.Fiber()
@@ -451,11 +555,20 @@ func (c *Context) URL() *URL {
 	}
 	return &u
 }
+
+// Set set url query string variable
+//  @receiver u
+//  @param key
+//  @param value
+//  @return *URL
 func (u *URL) Set(key string, value interface{}) *URL {
 	u.Query.Set(key, fmt.Sprint(value))
 	return u
 }
 
+// String build string url of URL struct
+//  @receiver u
+//  @return string
 func (u *URL) String() string {
 	return u.Path + "?" + u.Query.Encode()
 }

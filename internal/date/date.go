@@ -15,6 +15,7 @@ type Date struct {
 }
 
 // Now return current date
+//  @return *Date
 func Now() *Date {
 	return &Date{
 		Base: time.Now(),
@@ -22,12 +23,17 @@ func Now() *Date {
 }
 
 // Midnight return midnight of given date
+//  @return *Date
 func (d *Date) Midnight() *Date {
 	d.Base = time.Date(d.Base.Year(), d.Base.Month(), d.Base.Day(), 0, 0, 0, 0, d.Base.Location())
 	return d
 }
 
 // Calculate calculates relative date to given date
+//  @receiver d
+//  @param expr
+//  @return *Date
+//  @return error
 func (d *Date) Calculate(expr string) (*Date, error) {
 	expr = strings.ToLower(expr)
 	fields := strings.Fields(expr)
@@ -122,16 +128,26 @@ func (d *Date) Calculate(expr string) (*Date, error) {
 }
 
 // DiffUnix add int64 to given date then return timestamp
+//  @receiver d
+//  @param t
+//  @return time.Duration
 func (d *Date) DiffUnix(t int64) time.Duration {
 	return time.Duration(d.Base.Unix()-t) * time.Second
 }
 
-// DiffDate add date to given date return timestamp
+// DiffDate add date to given date return timestamp\
+//  @receiver d
+//  @param t
+//  @return time.Duration
 func (d *Date) DiffDate(t Date) time.Duration {
 	return time.Duration(d.Base.Unix()-t.Unix()) * time.Second
 }
 
 // DiffExpr add expr to date return timestamp
+//  @receiver d
+//  @param expr
+//  @return time.Duration
+//  @return error
 func (d *Date) DiffExpr(expr string) (time.Duration, error) {
 	t := time.Date(d.Base.Year(), d.Base.Month(), d.Base.Day(), d.Base.Hour(), d.Base.Minute(), d.Base.Second(), d.Base.Nanosecond(), d.Base.Location())
 	_, err := d.Calculate(expr)
@@ -142,31 +158,47 @@ func (d *Date) DiffExpr(expr string) (time.Duration, error) {
 }
 
 // DiffTime add given time date return timestamp
+//  @receiver d
+//  @param t
+//  @return time.Duration
 func (d *Date) DiffTime(t time.Time) time.Duration {
 	return time.Duration(d.Base.Unix()-t.Unix()) * time.Second
 }
 
 // Format formats given date
+//  @receiver d
+//  @param expr
+//  @return string
 func (d *Date) Format(expr string) string {
 	return d.Base.Format(expr)
 }
 
 // FormatS format given date as strftime syntax
+//  @receiver d
+//  @param expr
+//  @return string
 func (d *Date) FormatS(expr string) string {
 	return strftime.Format(&d.Base, expr)
 }
 
 // Unix return timestamp of given date
+//  @receiver d
+//  @return int64
 func (d *Date) Unix() int64 {
 	return d.Base.Unix()
 }
 
 // UnixNano return nano timestamp of given date
+//  @receiver d
+//  @return int64
 func (d *Date) UnixNano() int64 {
 	return d.Base.UnixNano()
 }
 
 // FromString parse any string to Date
+//  @param expr
+//  @return *Date
+//  @return error
 func FromString(expr string) (*Date, error) {
 	t, err := dateparse.ParseLocal(expr)
 	if err != nil {
@@ -178,13 +210,17 @@ func FromString(expr string) (*Date, error) {
 }
 
 // FromTime parse time to Date
+//  @param t
+//  @return *Date
 func FromTime(t time.Time) *Date {
 	return &Date{
 		Base: t,
 	}
 }
 
-// FomUnix parse timestamp to Date
+// FromUnix parse timestamp to Date
+//  @param sec
+//  @return *Date
 func FromUnix(sec int64) *Date {
 	t := time.Unix(sec, 0)
 	return &Date{
@@ -192,6 +228,10 @@ func FromUnix(sec int64) *Date {
 	}
 }
 
+// Parse parse anything into Date
+//  @param in
+//  @return *Date
+//  @return error
 func Parse(in interface{}) (*Date, error) {
 	if v, ok := in.(int64); ok {
 		return FromUnix(v), nil
