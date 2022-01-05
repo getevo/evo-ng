@@ -10,6 +10,15 @@ import (
 func TestGeneric(t *testing.T) {
 	var string = "Hello World"
 
+	fmt.Printf("Parse(%+v).SizeInBytes() => %+v \n", "4mb", Parse("4mb").SizeInBytes())
+	fmt.Printf("Parse(%+v).SizeInBytes() => %+v \n", "4GB", Parse("4GB").SizeInBytes())
+	fmt.Printf("Parse(%+v).SizeInBytes() => %+v \n", "10", Parse("10").SizeInBytes())
+	fmt.Printf("Parse(%+v).SizeInBytes() => %+v \n", "10B", Parse("10B").SizeInBytes())
+
+	fmt.Printf("Parse(%+v).ByteCount() => %+v \n", "4294967296 ", Parse("4294967296").ByteCount())
+	fmt.Printf("Parse(%+v).ByteCount() => %+v \n", "4398046511104", Parse("4398046511104").ByteCount())
+	fmt.Printf("Parse(%+v).ByteCount() => %+v \n", "10737418240", Parse("10737418240").ByteCount())
+
 	fmt.Printf("Parse(%+v).String() => %+v \n", string, Parse(string).String())
 	fmt.Printf("Parse(%+v).Int() => %+v \n", string, Parse(string).Int())
 	fmt.Printf("Parse(%+v).Float() => %+v \n", string, Parse(string).Float())

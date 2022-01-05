@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/araddon/dateparse"
 	"reflect"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -221,4 +222,42 @@ func (t *Type) Indirect() *Type {
 		return &el
 	}
 	return t
+}
+
+var sizeRegex = regexp.MustCompile(`(?m)^(\d+)\s*([kmgte]{0,1}b){0,1}$`)
+
+func (v Value) SizeInBytes() uint64 {
+	var s = strings.ToLower(strings.TrimSpace(fmt.Sprint(v.Input)))
+	var match = sizeRegex.FindAllStringSubmatch(s, 1)
+	if len(match) == 1 && len(match[0]) == 3 {
+		var base, _ = strconv.ParseUint(match[0][1], 10, 64)
+		switch match[0][2] {
+		case "kb":
+			base *= 1024
+		case "", "mb":
+			base *= 1024 * 1024 * 1024
+		case "gb":
+			base *= 1024 * 1024 * 1024 * 1024
+		case "tb":
+			base *= 1024 * 1024 * 1024 * 1024 * 1024
+		case "eb":
+			base *= 1024 * 1024 * 1024 * 1024 * 1024 * 1024
+		}
+		return base
+	}
+	return 0
+}
+
+func (v Value) ByteCount() string {
+	var b, _ = strconv.ParseUint(strings.TrimSpace(fmt.Sprint(v.Input)), 10, 64)
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "kMGTPE"[exp])
 }

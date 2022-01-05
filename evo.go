@@ -3,7 +3,13 @@ package evo
 import (
 	"fmt"
 	"github.com/getevo/evo-ng/internal/file"
+	"github.com/getevo/evo-ng/internal/generic"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/etag"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"os"
 	"time"
 )
@@ -22,7 +28,7 @@ type ContextInterface interface {
 	Use(*Context, interface{}) error
 }
 
-var app = fiber.New()
+var app *fiber.App
 var contextInstance ContextInterface
 
 type Version struct {
@@ -67,7 +73,71 @@ func Engine() {
 		}()
 
 	})
+	var config = fiber.Config{
+		CaseSensitive:         true,
+		StrictRouting:         false,
+		Immutable:             Config.WebServer.Immutable,
+		ServerHeader:          Config.WebServer.ServerHeader,
+		UnescapePath:          Config.WebServer.UnescapePath,
+		BodyLimit:             int(generic.Parse(Config.WebServer.BodyLimit).SizeInBytes()),
+		DisableStartupMessage: true,
+		DisableKeepalive:      Config.WebServer.DisableKeepalive,
+		ReadTimeout:           Config.WebServer.ReadTimeout,
+		WriteTimeout:          Config.WebServer.WriteTimeout,
+		IdleTimeout:           Config.WebServer.IdleTimeout,
+		ReadBufferSize:        Config.WebServer.ReadBufferSize,
+		WriteBufferSize:       Config.WebServer.WriteBufferSize,
+	}
+	if config.ReadTimeout < 1 {
+		config.ReadTimeout = 1<<63 - 1
+	}
+	if config.WriteTimeout < 1 {
+		config.WriteTimeout = 1<<63 - 1
+	}
+	if config.IdleTimeout < 1 {
+		config.IdleTimeout = 1<<63 - 1
+	}
+	if config.ReadBufferSize < 1 {
+		config.ReadBufferSize = 4096
+	}
+	if config.WriteBufferSize < 1 {
+		config.WriteBufferSize = 4096
+	}
+	if config.BodyLimit < 1 {
+		config.WriteBufferSize = 4 * 1024 * 1024
+	}
+	app = fiber.New(config)
+	if config.ETag {
+		app.Use(etag.New())
+	}
+	if Config.WebServer.Debug {
+		app.Use(logger.New())
+	}
 
+	if Config.WebServer.AllowOrigins != "" {
+		app.Use(cors.New(cors.Config{
+			AllowOrigins:     Config.WebServer.AllowOrigins,
+			AllowMethods:     Config.WebServer.AllowMethods,
+			AllowHeaders:     Config.WebServer.AllowHeaders,
+			AllowCredentials: Config.WebServer.AllowCredentials,
+			ExposeHeaders:    Config.WebServer.ExposeHeaders,
+			MaxAge:           Config.WebServer.PreflightMaxCacheAge,
+		}))
+	}
+
+	if Config.WebServer.CompressLevel > -1 {
+		if Config.WebServer.CompressLevel > 2 {
+			Config.WebServer.CompressLevel = 2
+		}
+		app.Use(compress.New(compress.Config{
+			Level: compress.Level(Config.WebServer.CompressLevel),
+		}))
+	}
+
+	var recoverConfig = recover.Config{
+		EnableStackTrace: Config.WebServer.Debug,
+	}
+	app.Use(recover.New(recoverConfig))
 }
 
 func UseContext(context ContextInterface) {

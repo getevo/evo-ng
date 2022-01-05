@@ -41,6 +41,11 @@ func Router() error {
 			"b": "B",
 		})
 	})
+
+	http.Get("/panic", func(context *http.Context) error {
+		var m map[string]interface{}
+		return m["1"].(error)
+	})
 	return nil
 }
 
