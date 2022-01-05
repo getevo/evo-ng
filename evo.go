@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/getevo/evo-ng/internal/file"
 	"github.com/getevo/evo-ng/internal/generic"
+	websocket2 "github.com/getevo/evo-ng/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -17,6 +18,7 @@ import (
 type ContextInterface interface {
 	New() ContextInterface
 	Get(*Context, interface{}) error
+	WebSocket(*Context, interface{}, *websocket2.Conn) error
 	Post(*Context, interface{}) error
 	Put(*Context, interface{}) error
 	Patch(*Context, interface{}) error
@@ -89,13 +91,13 @@ func Engine() {
 		WriteBufferSize:       Config.WebServer.WriteBufferSize,
 	}
 	if config.ReadTimeout < 1 {
-		config.ReadTimeout = 1<<63 - 1
+		config.ReadTimeout = 0
 	}
 	if config.WriteTimeout < 1 {
-		config.WriteTimeout = 1<<63 - 1
+		config.WriteTimeout = 0
 	}
 	if config.IdleTimeout < 1 {
-		config.IdleTimeout = 1<<63 - 1
+		config.IdleTimeout = 0
 	}
 	if config.ReadBufferSize < 1 {
 		config.ReadBufferSize = 4096
@@ -138,10 +140,73 @@ func Engine() {
 		EnableStackTrace: Config.WebServer.Debug,
 	}
 	app.Use(recover.New(recoverConfig))
+
+	/*	app.Use("/webs",func(c *fiber.Ctx) error {
+			if websocket.IsWebSocketUpgrade(c) {
+				return c.Next()
+			}
+			return fiber.ErrUpgradeRequired
+		})
+
+		app.Get("/webs",websocket.New(func(c *websocket.Conn) {
+			fmt.Println("here")
+			// websocket.Conn bindings https://pkg.go.dev/github.com/fasthttp/websocket?tab=doc#pkg-index
+			var (
+				mt  int
+				msg []byte
+				err error
+			)
+			for {
+				if mt, msg, err = c.ReadMessage(); err != nil {
+					log.Println("read:", err)
+					break
+				}
+				fmt.Printf("recv: %s \n", msg)
+
+				if err = c.WriteMessage(mt, []byte(c.Fiber.BaseURL()+":"+string(msg))); err != nil {
+					log.Println("write:", err)
+					break
+				}
+			}
+
+		}))*/
 }
 
 func UseContext(context ContextInterface) {
 	contextInstance = context
+}
+
+func WebSocket(url string, callback interface{}, params ...interface{}) {
+
+	app.Get(url, func(c *fiber.Ctx) error {
+		if websocket2.IsWebSocketUpgrade(c) {
+			c.Locals("allowed", true)
+			return c.Next()
+		}
+		return fiber.ErrUpgradeRequired
+	}, websocket2.New(func(c *websocket2.Conn) {
+		var ct = Context{
+			fiber: c.Fiber,
+		}
+		contextInstance.New().WebSocket(&ct, callback, c)
+		/*	var (
+				mt  int
+				msg []byte
+				err error
+			)
+			for {
+				if mt, msg, err = c.ReadMessage(); err != nil {
+					log.Println("read:", err)
+					break
+				}
+				if err = c.WriteMessage(mt, []byte( c.Fiber.BaseURL()+":"+string(msg) )); err != nil {
+					log.Println("write:", err)
+					break
+				}
+			}*/
+
+	}))
+
 }
 
 func Get(url string, callback interface{}, params ...interface{}) {
@@ -257,6 +322,7 @@ func Asset(url, localPath string, config ...AssetConfig) error {
 func Run(ready func()) {
 	ready()
 	Events.Trigger("ready")
+	fmt.Println("Starting server", Config.WebServer.Bind+":"+Config.WebServer.Port, "...")
 	var err = app.Listen(Config.WebServer.Bind + ":" + Config.WebServer.Port)
 	if err != nil {
 		fmt.Println(err)

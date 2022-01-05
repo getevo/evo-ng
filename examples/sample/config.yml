@@ -7,11 +7,13 @@ web_server:
     recover: true
     body_limit: 4mb
     proxy_header: ""
-    disable_keepalive: true
+    disable_keepalive: false
     disable_pre_parse_multipart_form: false
     static_dir:
         - ./web
     debug: true
+
+
 database:
     enabled: false
     type: ""

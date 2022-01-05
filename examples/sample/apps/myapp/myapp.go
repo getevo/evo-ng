@@ -4,17 +4,27 @@ import (
 	"fmt"
 	"github.com/getevo/evo-ng"
 	"github.com/getevo/evo-ng/examples/sample/http"
+	"github.com/getevo/evo-ng/websocket"
+	"log"
 	"os"
+	"time"
 )
 
 func Register() error {
 	fmt.Println("hello!")
 	fmt.Println(os.Args[1:])
 	evo.RegisterView("myapp", "./apps/myapp/views")
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			message <- fmt.Sprint(time.Now().Unix())
+		}
+	}()
 	return nil
 }
 
 var group = http.Group("/a")
+var message = make(chan string)
 
 func Router() error {
 	http.Get("/", func(context *http.Context) error {
@@ -45,6 +55,19 @@ func Router() error {
 	http.Get("/panic", func(context *http.Context) error {
 		var m map[string]interface{}
 		return m["1"].(error)
+	})
+
+	http.WebSocket("/ws", func(context *http.Context, c *websocket.Conn) error {
+
+		for {
+			msg := <-message
+
+			if err := c.WriteMessage(1, []byte(msg)); err != nil {
+				log.Println("write:", err)
+				break
+			}
+		}
+		return nil
 	})
 	return nil
 }

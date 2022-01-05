@@ -3,9 +3,9 @@
     "version": {
         "major": 0,
         "minor": 0,
-        "build": 100,
-        "hash": "c97a9b7d32c601ce00c49a37f434ea5e180bb5473fd42019d73a4bb8177b95fe",
-        "date": "2022-01-05T02:39:40.9628554+01:00"
+        "build": 148,
+        "hash": "8a23356ec5a311b56c9e0d937213e576da44f319eda92b65474db621c4e2b043",
+        "date": "2022-01-05T07:30:39.8554988+01:00"
     },
     "include": [
         "apps/geoip",

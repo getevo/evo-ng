@@ -40,6 +40,7 @@ type Configuration struct {
 		PreflightMaxCacheAge         int           `default:"0" yaml:"preflight_max_cache_age" json:"preflight_max_cache_age"`
 		Debug                        bool          `default:"true" json:"debug" yaml:"debug"`
 		CompressLevel                int           `default:"-1" json:"compress_level" yaml:"compress_level"`
+		WebSocket                    bool          `default:"false" json:"websocket" yaml:"websocket"`
 	} `yaml:"web_server" json:"web_server"`
 
 	Database struct {

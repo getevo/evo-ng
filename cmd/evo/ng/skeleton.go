@@ -56,7 +56,7 @@ func (s *Skeleton) GenContext() {
 		}
 
 	}
-	imports = append(imports, "github.com/gofiber/fiber/v2")
+	imports = append(imports, "github.com/gofiber/fiber/v2", "github.com/getevo/evo-ng/websocket")
 
 	root = root.AddStatements(
 		generator.NewPackage("http"),
@@ -67,7 +67,8 @@ func (s *Skeleton) GenContext() {
 		context,
 	)
 
-	statements = append(statements, generator.NewReturnStatement("callback.(func(*Context) error)(c)"))
+	var commonStatements = append(statements, generator.NewReturnStatement("callback.(func(*Context) error)(c)"))
+	var wsStatements = append(statements, generator.NewReturnStatement("callback.(func(*Context,*websocket.Conn) error)(c,ws)"))
 
 	root = root.AddStatements(generator.NewNewline(),
 		generator.NewCommentf("New create new type of struct"),
@@ -76,9 +77,36 @@ func (s *Skeleton) GenContext() {
 			generator.NewFuncSignature("New").AddReturnTypes("evo.ContextInterface"),
 			generator.NewReturnStatement("&Context{}"),
 		))
-	for _, method := range []string{"Get", "Post", "All", "Put", "Patch", "Options", "Connect", "Head", "Delete", "Use"} {
-		root = root.AddStatements(
+	for _, method := range []string{"Get", "Post", "All", "Put", "Patch", "Options", "Connect", "Head", "Delete", "Use", "WebSocket"} {
+		if method == "WebSocket" {
+			root = root.AddStatements(
+				generator.NewNewline(),
+				generator.NewCommentf("%s Wrap context http %s requests. callback accepts func(*http.Context,*websocket.Conn)", method, method),
+				generator.NewFunc(
+					generator.NewFuncReceiver("c", "*Context"),
+					generator.NewFuncSignature(method).AddParameters(
+						generator.NewFuncParameter("request ", "*evo.Context"),
+						generator.NewFuncParameter("callback", "interface{}"),
+						generator.NewFuncParameter("ws", "*websocket.Conn"),
+					).AddReturnTypes("err error"),
+					wsStatements...,
+				),
 
+				generator.NewNewline(),
+				generator.NewCommentf("%s Matches http %s requests. callback accepts func(*http.Context)", method, method),
+				generator.NewFunc(
+					nil,
+					generator.NewFuncSignature(method).AddParameters(
+						generator.NewFuncParameter("url ", "string"),
+						generator.NewFuncParameter("callback", "func(*Context,*websocket.Conn) error"),
+						generator.NewFuncParameter("params...", "interface{}"),
+					),
+					generator.NewRawStatement("evo."+method+("(url,callback,params...)")),
+				),
+			)
+			continue
+		}
+		root = root.AddStatements(
 			generator.NewNewline(),
 			generator.NewCommentf("%s Wrap context http %s requests. callback accepts func(*http.Context)", method, method),
 			generator.NewFunc(
@@ -88,7 +116,7 @@ func (s *Skeleton) GenContext() {
 					generator.NewFuncParameter("callback", "interface{}"),
 				).AddReturnTypes("err error"),
 
-				statements...,
+				commonStatements...,
 			),
 
 			generator.NewNewline(),
