@@ -5,6 +5,8 @@ import (
 	"github.com/araddon/dateparse"
 	"github.com/awoodbeck/strftime"
 	"github.com/getevo/evo-ng/internal/generic"
+	"github.com/getevo/monday"
+	"golang.org/x/text/language"
 	"strconv"
 	"strings"
 	"time"
@@ -481,14 +483,6 @@ func (d *Time) DiffTime(t time.Time) time.Duration {
 	return time.Duration(d.Unix()-t.Unix()) * time.Second
 }
 
-// Format formats given date
-//  @receiver d
-//  @param expr
-//  @return string
-func (d *Time) Format(expr string) string {
-	return d.Format(expr)
-}
-
 // FormatS format given date as strftime syntax
 //  @receiver d
 //  @param expr
@@ -496,6 +490,27 @@ func (d *Time) Format(expr string) string {
 func (d *Time) FormatS(expr string) string {
 	var t = d.Time()
 	return strftime.Format(&t, expr)
+}
+
+// Format formats given date to given layout as string
+//  @receiver d
+//  @param layout
+//  @param options... interface{}
+//  @accept locale as string example:en-US
+//  @accept locale as language.Locale
+//  @return string
+func (d Time) Format(layout string, options ...interface{}) string {
+	var t = d.Time()
+	var locale = "en-US"
+	for _, item := range options {
+		switch option := item.(type) {
+		case language.Tag:
+			locale = option.String()
+		case string:
+			locale = GuessLocale(option).String()
+		}
+	}
+	return monday.Format(t, layout, monday.Locale(locale))
 }
 
 func (d Time) Time() time.Time {
