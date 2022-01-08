@@ -178,10 +178,15 @@ func ParsePackage(path string) *Package {
 }
 
 func (p *Package) FindPackage(path string) error {
+	gopath := os.Getenv("GOPATH")
+	if gopath == "" {
+		gopath = build.Default.GOPATH
+	}
 	var chunks = strings.Split(path, "@")
 	var repo = ""
 	var tag = ""
 	var branch = ""
+
 	if len(chunks) == 2 {
 		repo = chunks[0]
 		tag = chunks[1]
@@ -207,10 +212,6 @@ func (p *Package) FindPackage(path string) error {
 		p.Path = "./vendor/" + path
 		p.IsLocal = false
 		return nil
-	}
-	gopath := os.Getenv("GOPATH")
-	if gopath == "" {
-		gopath = build.Default.GOPATH
 	}
 
 	if tag == "branch" || tag == "dev" {
@@ -271,7 +272,20 @@ func (p *Package) FindPackage(path string) error {
 			}
 
 		}
+		if file.IsDirExist(filepath.Join(gopath, "pkg", "mod", path)) {
+			p.Path = filepath.Join(gopath, "pkg", "mod", path)
+			return nil
+		}
 
+	}
+
+	if !file.IsDirExist(gopath + "/src/" + path) {
+		run("go", "get", "-d", path)
+	}
+	if file.IsDirExist(gopath + "/src/" + path) {
+		p.Path = gopath + "/src/" + path
+		p.IsLocal = false
+		return nil
 	}
 
 	return fmt.Errorf("unable to find package %s", path)

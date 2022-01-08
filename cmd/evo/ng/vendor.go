@@ -6,8 +6,11 @@ import (
 	"github.com/getevo/evo-ng/lib/file"
 	"github.com/getevo/evo-ng/lib/proc"
 	zglob "github.com/mattn/go-zglob"
+	"go/build"
+	"golang.org/x/mod/module"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"unicode"
@@ -52,9 +55,14 @@ func CopyModule(in string) {
 
 			if v, ok := replace[mod.ImportPath]; ok {
 				mod.ImportPath = strings.Replace(v, "/", "/", -1)
-				fmt.Println(mod.ImportPath)
 				mod.Version = ""
+			} else {
+				mod.ImportPath, err = GetModulePath(mod.ImportPath, mod.Version)
+				if err != nil {
+					panic(err)
+				}
 			}
+
 			matches, err := zglob.Glob(filepath.Join(mod.ImportPath, "**/*"))
 			if err != nil {
 				panic("unable to open " + mod.ImportPath)
@@ -63,10 +71,12 @@ func CopyModule(in string) {
 			var dir = filepath.Join(file.WorkingDir(), "vendor", in)
 
 			var skipList = [...]string{
-				mod.ImportPath + ".",
-				mod.ImportPath + "vendor",
-				mod.ImportPath + "examples",
+				".", "vendor", "examples",
 			}
+			for i, item := range skipList {
+				skipList[i] = strings.TrimRight(mod.ImportPath, "/") + "/" + item
+			}
+
 			var st = len(mod.ImportPath)
 			for _, match := range matches {
 				var shouldSkip = false
@@ -91,24 +101,33 @@ func CopyModule(in string) {
 
 }
 
-func buildModVendorList(copyPattern []string, mod *ImportMod) map[string]bool {
-	vendorList := map[string]bool{}
+func GetModulePath(name, version string) (string, error) {
+	// first we need GOMODCACHE
 
-	for _, pat := range copyPattern {
-		matches, err := zglob.Glob(filepath.Join(mod.Dir, pat))
-		if err != nil {
-			fmt.Println("Error! glob match failure:", err)
-			os.Exit(1)
+	cache, ok := os.LookupEnv("GOMODCACHE")
+	if !ok {
+		if os.Getenv("GOPATH") == "" {
+			cache = path.Join(build.Default.GOPATH, "pkg", "mod")
+		} else {
+			cache = path.Join(os.Getenv("GOPATH"), "pkg", "mod")
 		}
 
-		for _, m := range matches {
-			vendorList[m] = false
-		}
 	}
 
-	return vendorList
-}
+	// then we need to escape path
+	escapedPath, err := module.EscapePath(name)
+	if err != nil {
+		return "", err
+	}
 
+	// version also
+	escapedVersion, err := module.EscapeVersion(version)
+	if err != nil {
+		return "", err
+	}
+
+	return path.Join(cache, escapedPath+"@"+escapedVersion), nil
+}
 func pkgModPath(importPath, version string) string {
 	goPath := os.Getenv("GOPATH")
 	if goPath == "" {
@@ -137,8 +156,6 @@ func copyFile(src, dst string) (int64, error) {
 
 	if srcStat.IsDir() {
 		file.MakePath(dst)
-		fmt.Println("====>", dst)
-
 		return 0, nil
 	}
 	if !srcStat.Mode().IsRegular() {

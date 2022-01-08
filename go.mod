@@ -11,8 +11,10 @@ require (
 	github.com/getevo/evo v1.0.6
 	github.com/getevo/monday v1.0.2
 	github.com/go-git/go-git/v5 v5.4.2
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofiber/fiber/v2 v2.24.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
+	github.com/kelindar/binary v1.0.17
 	github.com/mattn/go-zglob v0.0.3
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/moznion/gowrtr v1.5.1
@@ -32,6 +34,8 @@ require (
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/andybalholm/brotli v1.0.2 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect

@@ -67,7 +67,7 @@ func Start() {
 	if err != nil {
 		proc.Die("unable to open go.mod")
 	}
-	CopyModule("github.com/getevo/evo-ng")
+
 	r := bufio.NewReader(f)
 	line, _, err := r.ReadLine()
 	if err != nil {
@@ -76,7 +76,7 @@ func Start() {
 	skeleton.Module = string(bytes.TrimPrefix(line, []byte("module ")))
 
 	skeleton.GenContext()
-
+	CopyModule("github.com/getevo/evo-ng")
 	var imports = []string{
 		"github.com/getevo/evo-ng",
 		skeleton.Module + "/http",
