@@ -12,6 +12,7 @@ require (
 	github.com/getevo/monday v1.0.2
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/go-redis/redis/v8 v8.11.4
+	github.com/go-redis/redis_rate/v9 v9.1.2
 	github.com/gofiber/fiber/v2 v2.24.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
 	github.com/kelindar/binary v1.0.17

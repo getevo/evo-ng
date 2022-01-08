@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/getevo/evo-ng"
 	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis_rate/v9"
 	"github.com/kelindar/binary"
 	"time"
 )
@@ -48,6 +49,9 @@ func Connect(config *Config) error {
 			return err
 		}
 		clusterClient.ReloadState(ctx)
+		Locker = newLock(singleClient)
+		limiter = redis_rate.NewLimiter(singleClient)
+
 	} else if len(config.Server) == 1 {
 		if len(config.Server) == 1 {
 			singleClient = redis.NewClient(&redis.Options{
@@ -60,6 +64,8 @@ func Connect(config *Config) error {
 			if err := singleClient.Ping(ctx).Err(); err != nil {
 				return err
 			}
+			Locker = newLock(singleClient)
+			limiter = redis_rate.NewLimiter(singleClient)
 		}
 	} else {
 		return fmt.Errorf("invalid server")
@@ -127,6 +133,24 @@ func GetRaw(key string) ([]byte, error) {
 
 }
 
+func Exists(key string) bool {
+	key = config.Redis.AppID + "#" + key
+	if clusterClient != nil {
+		return clusterClient.Exists(context.Background(), key).Err() != nil
+	} else {
+		return singleClient.Exists(context.Background(), key).Err() != nil
+	}
+}
+
+func Extend(key string, duration time.Duration) error {
+	key = config.Redis.AppID + "#" + key
+	if clusterClient != nil {
+		return clusterClient.Expire(ctx, key, duration).Err()
+	} else {
+		return singleClient.Expire(ctx, key, duration).Err()
+	}
+}
+
 func Del(key string) error {
 	key = config.Redis.AppID + "#" + key
 	if clusterClient != nil {
@@ -171,12 +195,15 @@ func Get(key string, v interface{}) error {
 	}
 }
 
-func Delete(key string) error {
-	key = config.Redis.AppID + "#" + key
+func Delete(keys ...string) error {
+	for i, key := range keys {
+		keys[i] = config.Redis.AppID + "#" + key
+	}
+
 	if clusterClient != nil {
-		return clusterClient.Del(context.Background(), key).Err()
+		return clusterClient.Del(context.Background(), keys...).Err()
 	} else {
-		return singleClient.Del(context.Background(), key).Err()
+		return singleClient.Del(context.Background(), keys...).Err()
 	}
 }
 
