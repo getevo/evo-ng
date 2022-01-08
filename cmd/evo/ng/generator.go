@@ -67,6 +67,7 @@ func Start() {
 	if err != nil {
 		proc.Die("unable to open go.mod")
 	}
+	CopyModule("github.com/getevo/evo-ng")
 	r := bufio.NewReader(f)
 	line, _, err := r.ReadLine()
 	if err != nil {

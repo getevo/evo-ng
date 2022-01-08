@@ -13,6 +13,7 @@ require (
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/gofiber/fiber/v2 v2.24.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
+	github.com/mattn/go-zglob v0.0.3
 	github.com/mitchellh/mapstructure v1.4.1
 	github.com/moznion/gowrtr v1.5.1
 	github.com/otiai10/copy v1.7.0

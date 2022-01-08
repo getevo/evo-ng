@@ -28,7 +28,7 @@ type Time time.Time
 func Date(params ...interface{}) Time {
 	length := len(params)
 	if length == 1 {
-		var d, _ = Parse(params[0])
+		var d, _ = TryParseTime(params[0])
 		return d
 	} else if length == 3 {
 		y := generic.Parse(params[0]).Int()
@@ -501,7 +501,7 @@ func (d *Time) FormatS(expr string) string {
 //  @return string
 func (d Time) Format(layout string, options ...interface{}) string {
 	var t = d.Time()
-	var locale = "en-US"
+	var locale = defaultLocale
 	for _, item := range options {
 		switch option := item.(type) {
 		case language.Tag:
@@ -513,6 +513,9 @@ func (d Time) Format(layout string, options ...interface{}) string {
 	return monday.Format(t, layout, monday.Locale(locale))
 }
 
+// Time return time.Time value
+//  @receiver d
+//  @return time.Time
 func (d Time) Time() time.Time {
 	var t = time.Time(d)
 	return t
@@ -559,23 +562,11 @@ func FromUnix(sec int64) Time {
 	return Time(time.Unix(sec, 0))
 }
 
-// Parse parse anything into Date
+// TryParseTime parse anything into Time
 //  @param in
-//  @return *Date
+//  @return Time
 //  @return error
-func Parse(in interface{}) (Time, error) {
-	if v, ok := in.(int64); ok {
-		return FromUnix(v), nil
-	} else if v, ok := in.(time.Time); ok {
-		return FromTime(v), nil
-	} else if v, ok := in.(*time.Time); ok {
-		return FromTime(*v), nil
-	} else if v, ok := in.(string); ok {
-		return FromString(v)
-	} else if v, ok := in.(Time); ok {
-		return v, nil
-	} else if v, ok := in.(*Time); ok {
-		return *v, nil
-	}
+func TryParseTime(in interface{}) (Time, error) {
+
 	return Time{}, fmt.Errorf("unrecognized date input")
 }

@@ -31,3 +31,7 @@ database:
     max_idle_connections: 0
     connection_max_lifetime: 0
     connection_string: ""
+
+redis:
+    server: ["127.0.0.1:6379"]
+    app_id: sample

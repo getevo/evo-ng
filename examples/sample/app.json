@@ -3,14 +3,15 @@
     "version": {
         "major": 0,
         "minor": 0,
-        "build": 149,
-        "hash": "b246634de2e381263db2d817102230822e50dc1236e0213a9f4760fc77249c0c",
-        "date": "2022-01-05T07:33:59.4838537+01:00"
+        "build": 150,
+        "hash": "54a1febb5a3497ca6279fc9917b5cd14bae233cd36e2e60377e215f8270d6625",
+        "date": "2022-01-08T01:43:44.1412371+01:00"
     },
     "include": [
         "apps/geoip",
         "apps/myapp",
         "apps/override",
+        "github.com/getevo/evo-ng/apps/redis",
         "github.com/getevo/evo-ng/apps/message"
     ],
     "replace": {
