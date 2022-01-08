@@ -14,7 +14,7 @@ type ConcurrentMap []*ConcurrentMapShared
 // ConcurrentMapShared A "thread" safe string to anything map.
 type ConcurrentMapShared struct {
 	items        map[string]interface{}
-	sync.RWMutex // Read Write mutex, guards access to internal map.
+	sync.RWMutex // Read Write mutex, guards access to lib map.
 }
 
 // NewConcurrentMap Creates a new concurrent map.

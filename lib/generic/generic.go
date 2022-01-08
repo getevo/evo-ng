@@ -50,7 +50,7 @@ func Parse(i interface{}) Value {
 	}
 }
 
-// Type internal structure to keep input and its type
+// Type lib structure to keep input and its type
 type Type struct {
 	input interface{}
 	iType reflect.Type

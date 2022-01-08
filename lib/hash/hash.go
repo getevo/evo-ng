@@ -6,7 +6,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
-	"github.com/getevo/evo-ng/internal/generic"
+	"github.com/getevo/evo-ng/lib/generic"
 	"github.com/hart87/GoFlake/generator"
 	"hash"
 	"hash/fnv"

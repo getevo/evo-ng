@@ -2,8 +2,8 @@ package evo
 
 import (
 	"fmt"
-	"github.com/getevo/evo-ng/internal/file"
-	"github.com/getevo/evo-ng/internal/generic"
+	"github.com/getevo/evo-ng/lib/file"
+	"github.com/getevo/evo-ng/lib/generic"
 	websocket2 "github.com/getevo/evo-ng/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"

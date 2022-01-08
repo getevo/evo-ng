@@ -1,7 +1,7 @@
 package ng
 
 import (
-	"github.com/getevo/evo-ng/internal/file"
+	"github.com/getevo/evo-ng/lib/file"
 	"github.com/getevo/evo/lib/log"
 )
 

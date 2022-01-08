@@ -3,7 +3,7 @@ package evo
 import (
 	"fmt"
 	"github.com/creasty/defaults"
-	"github.com/getevo/evo-ng/internal/args"
+	"github.com/getevo/evo-ng/lib/args"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"

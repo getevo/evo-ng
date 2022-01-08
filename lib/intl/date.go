@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/araddon/dateparse"
 	"github.com/awoodbeck/strftime"
-	"github.com/getevo/evo-ng/internal/generic"
+	"github.com/getevo/evo-ng/lib/generic"
 	"github.com/getevo/monday"
 	"golang.org/x/text/language"
 	"strconv"

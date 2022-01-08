@@ -4,7 +4,7 @@ import (
 	"github.com/getevo/evo-ng/cmd/evo/action"
 	"github.com/getevo/evo-ng/cmd/evo/ng"
 	"github.com/getevo/evo-ng/install"
-	"github.com/getevo/evo-ng/internal/args"
+	"github.com/getevo/evo-ng/lib/args"
 )
 
 const (

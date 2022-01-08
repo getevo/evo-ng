@@ -3,8 +3,8 @@ package ng
 import (
 	"bufio"
 	"fmt"
-	"github.com/getevo/evo-ng/internal/file"
-	"github.com/getevo/evo-ng/internal/proc"
+	"github.com/getevo/evo-ng/lib/file"
+	"github.com/getevo/evo-ng/lib/proc"
 	zglob "github.com/mattn/go-zglob"
 	"io"
 	"os"

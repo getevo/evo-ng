@@ -1,9 +1,9 @@
 package install
 
 import (
-	"github.com/getevo/evo-ng/internal/args"
-	"github.com/getevo/evo-ng/internal/file"
-	"github.com/getevo/evo-ng/internal/proc"
+	"github.com/getevo/evo-ng/lib/args"
+	"github.com/getevo/evo-ng/lib/file"
+	"github.com/getevo/evo-ng/lib/proc"
 	"log"
 	"os"
 	"runtime"

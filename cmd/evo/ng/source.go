@@ -3,8 +3,8 @@ package ng
 import (
 	"fmt"
 	"github.com/getevo/evo-ng"
-	"github.com/getevo/evo-ng/internal/file"
-	"github.com/getevo/evo-ng/internal/regex"
+	"github.com/getevo/evo-ng/lib/file"
+	"github.com/getevo/evo-ng/lib/regex"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"

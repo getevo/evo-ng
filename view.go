@@ -3,7 +3,7 @@ package evo
 import (
 	"fmt"
 	"github.com/CloudyKit/jet/v6"
-	"github.com/getevo/evo-ng/internal/shared"
+	"github.com/getevo/evo-ng/lib/shared"
 )
 
 func GetView(env string) (*jet.Set, error) {

@@ -2,8 +2,8 @@ package ng
 
 import (
 	"github.com/getevo/evo-ng"
-	"github.com/getevo/evo-ng/internal/ds"
-	"github.com/getevo/evo-ng/internal/file"
+	"github.com/getevo/evo-ng/lib/ds"
+	"github.com/getevo/evo-ng/lib/file"
 	"github.com/moznion/gowrtr/generator"
 	"strings"
 )

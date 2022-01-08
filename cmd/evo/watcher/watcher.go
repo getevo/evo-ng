@@ -2,7 +2,7 @@ package watcher
 
 import (
 	"fmt"
-	"github.com/getevo/evo-ng/internal/file"
+	"github.com/getevo/evo-ng/lib/file"
 	"github.com/getevo/evo/lib/gpath"
 	"go/build"
 	"io/ioutil"
