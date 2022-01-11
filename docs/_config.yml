@@ -18,8 +18,9 @@ remote_theme: pmarsceill/just-the-docs
 title: EVO NG Docs
 description: EVO NG documentation
 #baseurl: "/just-the-docs" # the subpath of your site, e.g. /blog
+baseurl: "/evo-ng"
 url: "https://getevo.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-
+#
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile"]
 
