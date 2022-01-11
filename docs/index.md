@@ -4,8 +4,19 @@ title: Home
 nav_order: 1
 description: "EVO NG Docs"
 permalink: /
-last_modified_date: 2022-01-11T17:54:08+0000
+last_modified_date: 2022-01-23:54:08+0000
 ---
+
+# EVO NG
+
+EVO-NG is the successor EVO which applies same idea but in different point of view. EVO was built to become an app engine, but EVO-NG has built to become versatile,flexible and highly customizable app engine.
+
+Aims of NG:
+Treat golang as an interpreter language, yet it is compiled
+Highly customizable without sacrificing anything
+Reusable/Customizable painlessly
+Ready for scaled and distributed systems
+Yet high performance
 
 # This wiki is primarily aimed at engineers building or making contributions to EVO NG.
 
