@@ -1,9 +1,11 @@
 package generic
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"github.com/araddon/dateparse"
+	"gopkg.in/yaml.v3"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -260,4 +262,37 @@ func (v Value) ByteCount() string {
 		exp++
 	}
 	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "kMGTPE"[exp])
+}
+
+func (v *Value) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Input)
+}
+
+func (v *Value) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &v.Input)
+}
+
+func (v *Value) MarshalYAML() ([]byte, error) {
+	return yaml.Marshal(v.Input)
+}
+
+func (v *Value) UnmarshalYAML(data []byte) error {
+	return yaml.Unmarshal(data, &v.Input)
+}
+
+func (v *Value) Scan(value interface{}) error {
+	switch cast := value.(type) {
+	case string:
+		v.Input = cast
+	case []byte:
+		v.Input = string(cast)
+	default:
+		v.Input = cast
+	}
+	return nil
+}
+
+// Value return drive.Value value, implement driver.Valuer interface of gorm
+func (v Value) Value() (driver.Value, error) {
+	return ToString(v.Input), nil
 }
