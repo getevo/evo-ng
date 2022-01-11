@@ -1,6 +1,7 @@
 package install
 
 import (
+	"github.com/getevo/evo-ng"
 	"github.com/getevo/evo-ng/lib/args"
 	"github.com/getevo/evo-ng/lib/file"
 	"github.com/getevo/evo-ng/lib/proc"
@@ -39,7 +40,7 @@ func windows() {
 }
 
 func darwin() {
-	panic("macos is not supported")
+	evo.Panic("macos is not supported")
 }
 
 func linux() {

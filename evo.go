@@ -11,6 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/pkg/errors"
 	"os"
 	"time"
 )
@@ -53,7 +54,7 @@ var Config = Configuration{}
 func Engine() {
 	var err = ParseConfig(&Config)
 	if err != nil {
-		panic(err)
+		panic(errors.WithStack(err))
 	}
 	Events.Register()
 	Events.On("exit", func() {
@@ -188,23 +189,10 @@ func WebSocket(url string, callback interface{}, params ...interface{}) {
 		var ct = Context{
 			fiber: c.Fiber,
 		}
-		contextInstance.New().WebSocket(&ct, callback, c)
-		/*	var (
-				mt  int
-				msg []byte
-				err error
-			)
-			for {
-				if mt, msg, err = c.ReadMessage(); err != nil {
-					log.Println("read:", err)
-					break
-				}
-				if err = c.WriteMessage(mt, []byte( c.Fiber.BaseURL()+":"+string(msg) )); err != nil {
-					log.Println("write:", err)
-					break
-				}
-			}*/
-
+		err := contextInstance.New().WebSocket(&ct, callback, c)
+		if err != nil {
+			return
+		}
 	}))
 
 }

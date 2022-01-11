@@ -72,7 +72,7 @@ func ParsePackage(path string) *Package {
 		evo.Panic(err)
 	}
 	if result.Path == "" {
-		panic(evo.STrace("unable to find "+path, 0))
+		evo.Panic(evo.STrace("unable to find "+path, 0))
 	}
 	files, err := ioutil.ReadDir(result.Path)
 	if err != nil {
@@ -215,7 +215,7 @@ func (p *Package) FindPackage(path string) error {
 	}
 
 	if tag == "branch" || tag == "dev" {
-		file.MakePath(gopath + "/src/" + filepath.Dir(repo))
+		_ = file.MakePath(gopath + "/src/" + filepath.Dir(repo))
 		if !file.IsDirExist(gopath + "/src/" + repo) {
 			fmt.Println("Cloning", repo, "into", file.WorkingDir()+"/git/"+repo)
 			repository, err := git.PlainClone(gopath+"/src/"+repo, false, &git.CloneOptions{
@@ -223,28 +223,28 @@ func (p *Package) FindPackage(path string) error {
 				Progress: os.Stdout,
 			})
 			if err != nil {
-				file.Remove(gopath + "/src/" + repo)
-				panic(err)
+				_ = file.Remove(gopath + "/src/" + repo)
+				evo.Panic(err)
 			}
 			w, err := repository.Worktree()
 			if err != nil {
-				file.Remove(gopath + "/src/" + repo)
-				panic(err)
+				_ = file.Remove(gopath + "/src/" + repo)
+				evo.Panic(err)
 			}
 			err = repository.Fetch(&git.FetchOptions{
 				RefSpecs: []config.RefSpec{"refs/*:refs/*", "HEAD:refs/heads/HEAD"},
 			})
 			if err != nil {
-				file.Remove(gopath + "/src/" + repo)
-				panic(err)
+				_ = file.Remove(gopath + "/src/" + repo)
+				evo.Panic(err)
 			}
 			err = w.Checkout(&git.CheckoutOptions{
 				Branch: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
 				Force:  true,
 			})
 			if err != nil {
-				file.Remove(gopath + "/src/" + repo)
-				panic(err)
+				_ = file.Remove(gopath + "/src/" + repo)
+				evo.Panic(err)
 			}
 
 		}
@@ -258,11 +258,11 @@ func (p *Package) FindPackage(path string) error {
 		run("go", "get", "-d", path)
 		var data, err = ioutil.ReadFile("./go.mod")
 		if err != nil {
-			panic(err)
+			evo.Panic(err)
 		}
 		f, err := modfile.Parse("go.mod", data, nil)
 		if err != nil {
-			panic(err)
+			evo.Panic(err)
 		}
 
 		for _, item := range f.Require {

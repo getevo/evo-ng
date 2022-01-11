@@ -3,6 +3,7 @@ package ng
 import (
 	"bufio"
 	"fmt"
+	"github.com/getevo/evo-ng"
 	"github.com/getevo/evo-ng/lib/file"
 	"github.com/getevo/evo-ng/lib/proc"
 	zglob "github.com/mattn/go-zglob"
@@ -13,7 +14,6 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"unicode"
 )
 
 type ImportMod struct {
@@ -29,7 +29,12 @@ func CopyModule(in string) {
 	if err != nil {
 		proc.Die("unable to open go.mod")
 	}
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			return
+		}
+	}(f)
 	run("go", "mod", "vendor")
 	scanner := bufio.NewScanner(f)
 	scanner.Split(bufio.ScanLines)
@@ -59,13 +64,13 @@ func CopyModule(in string) {
 			} else {
 				mod.ImportPath, err = GetModulePath(mod.ImportPath, mod.Version)
 				if err != nil {
-					panic(err)
+					evo.Panic(err)
 				}
 			}
 
 			matches, err := zglob.Glob(filepath.Join(mod.ImportPath, "**/*"))
 			if err != nil {
-				panic("unable to open " + mod.ImportPath)
+				evo.Panic("unable to open " + mod.ImportPath)
 			}
 
 			var dir = filepath.Join(file.WorkingDir(), "vendor", in)
@@ -91,7 +96,7 @@ func CopyModule(in string) {
 				}
 				var _, err = copyFile(match, filepath.Join(dir, match[st:]))
 				if err != nil {
-					panic(err)
+					evo.Panic(err)
 				}
 			}
 
@@ -128,25 +133,6 @@ func GetModulePath(name, version string) (string, error) {
 
 	return path.Join(cache, escapedPath+"@"+escapedVersion), nil
 }
-func pkgModPath(importPath, version string) string {
-	goPath := os.Getenv("GOPATH")
-	if goPath == "" {
-		// the default GOPATH for go v1.11
-		goPath = filepath.Join(os.Getenv("HOME"), "go")
-	}
-
-	var normPath string
-
-	for _, char := range importPath {
-		if unicode.IsUpper(char) {
-			normPath += "!" + string(unicode.ToLower(char))
-		} else {
-			normPath += string(char)
-		}
-	}
-
-	return filepath.Join(goPath, "pkg", "mod", fmt.Sprintf("%s@%s", normPath, version))
-}
 
 func copyFile(src, dst string) (int64, error) {
 	srcStat, err := os.Stat(src)
@@ -155,7 +141,7 @@ func copyFile(src, dst string) (int64, error) {
 	}
 
 	if srcStat.IsDir() {
-		file.MakePath(dst)
+		_ = file.MakePath(dst)
 		return 0, nil
 	}
 	if !srcStat.Mode().IsRegular() {
@@ -166,13 +152,23 @@ func copyFile(src, dst string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer srcFile.Close()
+	defer func(srcFile *os.File) {
+		err := srcFile.Close()
+		if err != nil {
+			return
+		}
+	}(srcFile)
 
 	dstFile, err := os.Create(dst)
 	if err != nil {
 		return 0, err
 	}
-	defer dstFile.Close()
+	defer func(dstFile *os.File) {
+		err := dstFile.Close()
+		if err != nil {
+			return
+		}
+	}(dstFile)
 
 	return io.Copy(dstFile, srcFile)
 }

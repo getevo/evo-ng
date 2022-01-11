@@ -37,7 +37,10 @@ var ContextInterface = Function{
 }
 
 func Start() {
-	os.Remove("./go.mod")
+	err := os.Remove("./go.mod")
+	if err != nil {
+		evo.Panic(err)
+	}
 	skeleton = GetSkeleton("./app.json")
 
 	main.Events.Set("OverRide", generator.NewFunc(nil, generator.NewFuncSignature("OverRide")))
@@ -71,7 +74,7 @@ func Start() {
 	r := bufio.NewReader(f)
 	line, _, err := r.ReadLine()
 	if err != nil {
-		panic(err)
+		evo.Panic(err)
 	}
 	skeleton.Module = string(bytes.TrimPrefix(line, []byte("module ")))
 
@@ -129,7 +132,12 @@ func Start() {
 	if err != nil {
 		evo.Panic(err)
 	}
-	file.Write(file.WorkingDir()+"/main.go", generated)
+	err = file.Write(file.WorkingDir()+"/main.go", generated)
+	if err != nil {
+		if err != nil {
+			evo.Panic(err)
+		}
+	}
 
 	run("go", "mod", "vendor")
 
@@ -140,5 +148,8 @@ func run(cmd string, args ...string) {
 	fmt.Println(cmd, strings.Join(args, " "))
 	c := exec.Command(cmd, args...)
 	c.Dir = file.WorkingDir()
-	c.Run()
+	err := c.Run()
+	if err != nil {
+		evo.Panic(err)
+	}
 }

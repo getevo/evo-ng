@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/getevo/evo-ng"
 	"github.com/getevo/evo-ng/cmd/evo/action"
 	"github.com/getevo/evo-ng/cmd/evo/ng"
 	"github.com/getevo/evo-ng/install"
@@ -22,7 +23,7 @@ func main() {
 		action.CreateApp()
 	case "":
 	default:
-		panic("unrecognized parameter")
+		evo.Panic("unrecognized parameter")
 	}
 
 	ng.Start()

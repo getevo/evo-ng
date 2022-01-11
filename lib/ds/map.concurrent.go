@@ -2,6 +2,7 @@ package ds
 
 import (
 	"encoding/json"
+	"github.com/getevo/evo-ng"
 	"sync"
 )
 
@@ -201,7 +202,7 @@ func (m ConcurrentMap) Clear() {
 func snapshot(m ConcurrentMap) (chans []chan Tuple) {
 	//When you access map items before initializing.
 	if len(m) == 0 {
-		panic(`cmap.ConcurrentMap is not initialized. Should run New() before usage.`)
+		evo.Panic(`cmap.ConcurrentMap is not initialized. Should run New() before usage.`)
 	}
 	chans = make([]chan Tuple, ShardCount)
 	wg := sync.WaitGroup{}

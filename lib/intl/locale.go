@@ -2,6 +2,7 @@ package intl
 
 import (
 	"fmt"
+	"github.com/getevo/evo-ng"
 	"golang.org/x/text/language"
 )
 
@@ -30,7 +31,7 @@ func SetDefaultLocale(locale interface{}) {
 	case string:
 		supported[0] = language.Make(item)
 	default:
-		panic("invalid locale type")
+		evo.Panic("invalid locale type")
 	}
 	matcher = language.NewMatcher(supported)
 }
@@ -43,7 +44,7 @@ func AddLocale(locals ...interface{}) {
 		case string:
 			supported = append(supported, language.Make(local))
 		default:
-			panic("invalid locale type")
+			evo.Panic("invalid locale type")
 		}
 	}
 	matcher = language.NewMatcher(supported)

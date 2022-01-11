@@ -44,28 +44,33 @@ type Configuration struct {
 	} `yaml:"web_server" json:"web_server"`
 
 	Database struct {
-		Enabled          bool          `yaml:"enabled" json:"enabled"`
-		Type             string        `yaml:"type" json:"type"`
-		Username         string        `yaml:"user" json:"username"`
-		Password         string        `yaml:"pass" json:"password"`
-		Server           string        `yaml:"server" json:"server"`
-		Cache            string        `yaml:"cache" json:"cache"`
-		CacheSize        string        `yaml:"cache_size" json:"cache_size"`
-		Debug            string        `yaml:"debug" json:"debug"`
-		Database         string        `yaml:"database" json:"database"`
-		Schema           string        `yaml:"schema" json:"schema"`
-		SSLMode          string        `yaml:"ssl_mode" json:"ssl_mode"`
-		Params           string        `yaml:"params" json:"params"`
-		MaxOpenConns     int           `yaml:"max_open_connections" json:"max_open_connections"`
-		MaxIdleConns     int           `yaml:"max_idle_connections" json:"max_idle_connections"`
-		ConnMaxLifeTime  time.Duration `yaml:"connection_max_lifetime" json:"connection_max_lifetime"`
-		ConnectionString string        `yaml:"connection_string" json:"connection_string"`
+		Enabled                                  bool     `default:"true" yaml:"enabled" json:"enabled"`
+		Dialect                                  string   `default:"mysql" yaml:"dialect" json:"dialect"`
+		DSN                                      string   `default:"user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local" yaml:"dsn" json:"dsn"`
+		Database                                 string   `default:"dbname" yaml:"database" json:"database"`
+		Replicas                                 []string `yaml:"replicas" json:"replicas"`
+		SkipDefaultTransaction                   bool     `default:"false" yaml:"skip_default_transaction" json:"skip_default_transaction"`
+		FullSaveAssociations                     bool     `default:"true" yaml:"full_save_associations" json:"full_save_associations"`
+		DisableAutomaticPing                     bool     `default:"false" yaml:"disable_automatic_ping" json:"disable_automatic_ping"`
+		DisableForeignKeyConstraintWhenMigrating bool     `default:"false" yaml:"disable_foreign_key_constraint_when_migrating" json:"disable_foreign_key_constraint_when_migrating"`
+		DisableNestedTransaction                 bool     `default:"false" yaml:"disable_nested_transaction" json:"disable_nested_transaction"`
+		CreateBatchSize                          int      `default:"100" yaml:"create_batch_size" json:"create_batch_size"`
+		QueryFields                              bool     `default:"true" yaml:"query_fields" json:"query_fields"`
+		StmtCache                                bool     `default:"true" yaml:"stmt_cache" json:"stmt_cache"`
+		TablePrefix                              string   `default:"" yaml:"table_prefix" json:"table_prefix"`
+		Cache                                    string   `yaml:"cache" json:"cache"`
+		CacheSize                                string   `yaml:"cache_size" json:"cache_size"`
+		Debug                                    string   `yaml:"debug" json:"debug"`
+		MaxOpenConns                             int      `default:"100" yaml:"max_open_connections" json:"max_open_connections"`
+		MaxIdleConns                             int      `default:"10" yaml:"max_idle_connections" json:"max_idle_connections"`
+		ConnMaxLifeTime                          string   `default:"1h" yaml:"connection_max_lifetime" json:"connection_max_lifetime"`
+		ConnMaxIdleTime                          string   `default:"10m" yaml:"connection_max_idle_time" json:"connection_max_idle_time"`
 	} `yaml:"database" json:"database"`
 }
 
 func (c Configuration) Default() Configuration {
 	if err := defaults.Set(&c); err != nil {
-		panic(err)
+		Panic(err)
 	}
 	return c
 }
