@@ -13,9 +13,9 @@ If you are new to EVO NG, then you will find more general information on the EVO
 
 If you want to know what we're likely to do in the future, our roadmap may be of interest.
 
-If you intend to contribute to EVO, welcome! You are encouraged to start with our contributor guide, which helps onboard new team members. It points to the most relevant pages on this wiki.
+If you intend to contribute to EVO NG, welcome! You are encouraged to start with our contributor guide, which helps onboard new team members. It points to the most relevant pages on this wiki.
 
 ## Index of notable sections
 
-- [Why EVO](https://getevo.github.io/evo/docs/why-evo/)
-- [Configuration](https://getevo.github.io/evo/docs/configuration/)
+- [Why EVO](https://getevo.github.io/evo-ng/docs/why-evo/)
+- [Configuration](https://getevo.github.io/evo-ng/docs/configuration/)
