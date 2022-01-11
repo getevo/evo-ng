@@ -15,8 +15,8 @@ remote_theme: pmarsceill/just-the-docs
 # you will see them accessed via {{ site.title }}, {{ site.github_repo }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: EVO Docs
-description: EVO documentation
+title: EVO NG Docs
+description: EVO NG documentation
 #baseurl: "/just-the-docs" # the subpath of your site, e.g. /blog
 url: "https://getevo.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
@@ -59,7 +59,7 @@ heading_anchors: true
 # Aux links for the upper right navigation
 aux_links:
   "EVO":
-    - "//github.com/getevo/evo"
+    - "//github.com/getevo/evo-ng"
 
 # Makes Aux links open in a new tab. Default is false
 aux_links_new_tab: false
@@ -75,24 +75,24 @@ nav_sort: case_insensitive # default, equivalent to nil
 back_to_top: true
 back_to_top_text: "Back to top"
 
-footer_content: "Copyright &copy; 2017-2020 getEVO. Distributed by Github <a href=\"https://github.com/getevo/evo/blob/master/LICENSE.md>MIT license.</a>"
+footer_content: "Copyright &copy; 2017-2022 getEVO. Distributed by Github <a href=\"https://github.com/getevo/evo-ng/blob/master/LICENSE.md>MIT license.</a>"
 
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
 last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
-
-
-
+#
+#
+#
 # Footer "Edit this page on GitHub" link text
 gh_edit_link: true # show or hide edit this page link
 gh_edit_link_text: "Edit this page on GitHub"
-gh_edit_repository: "https://github.com/getevo/evo/blob/master/docs/index.md" # the github URL for your repo
+gh_edit_repository: "https://github.com/getevo/evo-ng/blob/master/docs/index.md" # the github URL for your repo
 gh_edit_branch: "master" # the branch that your docs is served from
 gh_edit_view_mode: "tree" # "tree" or "edit" if you want the user to jump into the editor immediately
-
+#
 # Color scheme currently only supports "dark", "light"/nil (default), or a custom scheme that you define
 color_scheme: nil
-
+#
 # Google Analytics Tracking (optional)
 # e.g, UA-1234567-89
 ga_tracking: UA-2709176-10
