@@ -28,18 +28,11 @@ Also, the EVO-NG actively gives support to the last 2 versions of Go, which at t
 While EVO-NG `may` work on older versions, we encourage you to upgrade to latest 2 versions of Go for a better development experience.
 
 
-Loading please wait ...
-
 
 # This wiki is primarily aimed at engineers building or making contributions to EVO NG.
 
-If you are new to EVO NG, then you will find more general information on the EVO project, including tutorials and samples.
+If you are new to EVO Next Generation, then you will find more general information on the EVO project, including tutorials and samples.
 
 If you want to know what we're likely to do in the future, our roadmap may be of interest.
 
-If you intend to contribute to EVO NG, welcome! You are encouraged to start with our contributor guide, which helps onboard new team members. It points to the most relevant pages on this wiki.
-
-## Index of notable sections
-
-- [Why EVO](https://getevo.github.io/evo-ng/docs/why-evo/)
-- [Configuration](https://getevo.github.io/evo-ng/docs/configuration/)
+If you intend to contribute to EVO Next Generation, welcome! You are encouraged to start with our contributor guide, which helps onboard new team members. It points to the most relevant pages on this wiki.
