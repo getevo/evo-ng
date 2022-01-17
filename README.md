@@ -1,4 +1,7 @@
 # EVO Next Generation
+[![CodeQL](https://github.com/getevo/evo-ng/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/getevo/evo-ng/actions/workflows/codeql-analysis.yml)
+
+
 EVO-NG is the successor EVO which applies same idea but in different point of view. EVO was built to become an app engine, but EVO-NG has built to become versatile,flexible and highly customizable app engine.
 
 ### Aims of NG:
