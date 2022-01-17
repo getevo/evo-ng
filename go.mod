@@ -31,26 +31,24 @@ require (
 	gorm.io/driver/mysql v1.0.4
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/driver/sqlite v1.1.4
-	gorm.io/driver/sqlserver v1.0.6
+	gorm.io/driver/sqlserver v1.2.1
 	gorm.io/gorm v1.22.3
 	gorm.io/plugin/dbresolver v1.1.0
 )
 
 require (
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
-	github.com/CloudyKit/jet v2.1.2+incompatible // indirect
 	github.com/Microsoft/go-winio v0.4.16 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/andybalholm/brotli v1.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc // indirect
+	github.com/denisenkom/go-mssqldb v0.11.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/emirpasic/gods v1.12.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
-	github.com/gofiber/websocket/v2 v2.0.15 // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 	github.com/hart87/goflake v0.0.0-20210517135841-c95a47da3eb9 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
@@ -63,7 +61,6 @@ require (
 	github.com/jackc/pgtype v1.9.0 // indirect
 	github.com/jackc/pgx/v4 v4.14.0 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
-	github.com/jinzhu/copier v0.3.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
