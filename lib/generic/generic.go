@@ -102,6 +102,11 @@ func (v Value) String() string {
 //  @receiver v
 //  @return int
 func (v Value) Int() int {
+	if float, ok := v.Input.(float64); ok {
+		return int(float)
+	} else if float, ok := v.Input.(float32); ok {
+		return int(float)
+	}
 	i, _ := strconv.Atoi(v.String())
 	return i
 }
@@ -110,6 +115,11 @@ func (v Value) Int() int {
 //  @receiver v
 //  @return uint64
 func (v Value) Uint64() uint64 {
+	if float, ok := v.Input.(float64); ok {
+		return uint64(float)
+	} else if float, ok := v.Input.(float32); ok {
+		return uint64(float)
+	}
 	i, _ := strconv.ParseUint(v.String(), 0, 64)
 	return i
 }
@@ -118,6 +128,11 @@ func (v Value) Uint64() uint64 {
 //  @receiver v
 //  @return int64
 func (v Value) Int64() int64 {
+	if float, ok := v.Input.(float64); ok {
+		return int64(float)
+	} else if float, ok := v.Input.(float32); ok {
+		return int64(float)
+	}
 	i, _ := strconv.ParseInt(v.String(), 0, 64)
 	return i
 }
@@ -126,6 +141,11 @@ func (v Value) Int64() int64 {
 //  @receiver v
 //  @return float64
 func (v Value) Float() float64 {
+	if float, ok := v.Input.(float64); ok {
+		return float
+	} else if float, ok := v.Input.(float32); ok {
+		return float64(float)
+	}
 	i, _ := strconv.ParseFloat(v.String(), 64)
 	return i
 }
