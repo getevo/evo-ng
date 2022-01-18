@@ -94,9 +94,44 @@ func Date(params ...interface{}) Time {
 	}
 }
 
-// GoString implements fmt.GoStringer and formats t to be printed in Go source
-func (d Time) GoString() string {
-	return d.Time().GoString()
+// SetLocation set location of date
+func (t Time) SetLocation(location *time.Location) Time {
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), location))
+}
+
+// SetYear set year of date
+func (t Time) SetYear(year int) Time {
+	return Time(time.Date(year, t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()))
+}
+
+// SetMonth set month of date
+func (t Time) SetMonth(month int) Time {
+	return Time(time.Date(t.Year(), time.Month(month), t.Day(), t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()))
+}
+
+// SetDay set day of date
+func (t Time) SetDay(day int) Time {
+	return Time(time.Date(t.Year(), t.Month(), day, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location()))
+}
+
+// SetHour set hour of date
+func (t Time) SetHour(hour int) Time {
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), hour, t.Minute(), t.Second(), t.Nanosecond(), t.Location()))
+}
+
+// SetMinute set minute of date
+func (t Time) SetMinute(minute int) Time {
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), minute, t.Second(), t.Nanosecond(), t.Location()))
+}
+
+// SetSecond set second of date
+func (t Time) SetSecond(second int) Time {
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), second, t.Nanosecond(), t.Location()))
+}
+
+// SetNanosecond set nanosecond of date
+func (t Time) SetNanosecond(nanosec int) Time {
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), nanosec, t.Location()))
 }
 
 // Add returns the time t+d.
@@ -182,18 +217,13 @@ func (t Time) YearDay() int {
 // Week ranges from 1 to 53. Jan 01 to Jan 03 of year n might belong to
 // week 52 or 53 of year n-1, and Dec 29 to Dec 31 might belong to week 1
 // of year n+1.
-func (t Time) ISOWeek(d time.Duration) (year, week int) {
+func (t Time) ISOWeek() (year, week int) {
 	return t.Time().ISOWeek()
 }
 
 // Weekday returns the day of the week specified by t.
 func (t Time) Weekday() time.Weekday {
 	return t.Time().Weekday()
-}
-
-// IsDST reports whether the time in the configured location is in Daylight Savings Time.
-func (t Time) IsDST() bool {
-	return t.Time().IsDST()
 }
 
 // IsZero reports whether t represents the zero time instant,
@@ -219,24 +249,6 @@ func (t Time) Before(u interface{}) bool {
 // Time values; most code should use Equal instead.
 func (t Time) Equal(u interface{}) bool {
 	return t.Time().Equal(Date(u).Time())
-}
-
-// UnixMicro returns t as a Unix time, the number of microseconds elapsed since
-// January 1, 1970 UTC. The result is undefined if the Unix time in
-// microseconds cannot be represented by an int64 (a date before year -290307 or
-// after year 294246). The result does not depend on the location associated
-// with t.
-func (t Time) UnixMicro() int64 {
-	return t.Time().UnixMicro()
-}
-
-// UnixMilli returns t as a Unix time, the number of milliseconds elapsed since
-// January 1, 1970 UTC. The result is undefined if the Unix time in
-// milliseconds cannot be represented by an int64 (a date more than 292 million
-// years before or after 1970). The result does not depend on the
-// location associated with t.
-func (t Time) UnixMilli() int64 {
-	return t.Time().UnixMilli()
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
@@ -335,11 +347,9 @@ func (t *Time) UnmarshalText(b []byte) error {
 
 // Midnight return midnight of given date
 //  @return *Date
-func (d *Time) Midnight() Time {
+func (d Time) Midnight() Time {
 	var t = d.Time()
-	var time = Time(time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()))
-	d = &time
-	return *d
+	return Time(time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location()))
 }
 
 // Calculate calculates relative date to given date
@@ -353,18 +363,19 @@ func (d *Time) Calculate(expr string) (Time, error) {
 	if len(fields) == 0 {
 		return *d, fmt.Errorf("unable to parse date expression:%s", expr)
 	}
-	if strings.Contains(expr, "midnight") {
-		d.Midnight()
+
+	var base time.Time
+
+	if strings.Contains(expr, "midnight") || strings.Contains(expr, "start") {
+		base = d.Midnight().Time()
+	} else {
+		base = d.Time()
 	}
-	var base = d.Time()
+
 	if fields[0] == "tomorrow" {
-		var t = Time(base.AddDate(0, 0, 1))
-		d = &t
-		return *d, nil
+		return Time(base.AddDate(0, 0, 1)), nil
 	} else if fields[0] == "yesterday" {
-		var t = Time(base.AddDate(0, 0, -1))
-		d = &t
-		return *d, nil
+		return Time(base.AddDate(0, 0, -1)), nil
 	} else if fields[0] == "today" {
 		return *d, nil
 	}
@@ -374,8 +385,10 @@ func (d *Time) Calculate(expr string) (Time, error) {
 	var i int
 	if fields[0] == "message" {
 		i = 1
-	} else if fields[0] == "last" {
-		i = 2
+	} else if fields[0] == "last" || fields[0] == "past" || fields[0] == "previous" || fields[0] == "prev" {
+		i = -1
+	} else if fields[0] == "next" {
+		i = 1
 	} else {
 		var err error
 		i, err = strconv.Atoi(fields[0])
@@ -388,60 +401,56 @@ func (d *Time) Calculate(expr string) (Time, error) {
 					i = i * -1
 				}
 			}
-			if fields[2] == "before" {
+			if fields[2] == "before" || fields[2] == "previous" || fields[2] == "prev" || fields[2] == "past" {
 				if i > 0 {
 					i = i * -1
 				}
 			}
 		}
 	}
-	var ti time.Time
+
 	if strings.HasPrefix(fields[1], "year") {
-		ti = base.AddDate(i, 0, 0)
+		base = base.AddDate(i, 0, 0)
 		if strings.Contains(expr, "start") {
-			ti = time.Date(ti.Year(), 1, 1, 0, 0, 0, 0, ti.Location())
+			base = time.Date(base.Year(), 1, 1, 0, 0, 0, 0, base.Location())
 		}
 	} else if strings.HasPrefix(fields[1], "month") {
-		ti = ti.AddDate(0, i, 0)
+		base = base.AddDate(0, i, 0)
 		if strings.Contains(expr, "start") {
-			ti = time.Date(ti.Year(), ti.Month(), 0, 0, 0, 0, 0, ti.Location())
+			base = time.Date(base.Year(), base.Month(), 0, 0, 0, 0, 0, base.Location())
 		}
 	} else if strings.HasPrefix(fields[1], "day") {
-		ti = ti.AddDate(0, 0, i)
-		if strings.Contains(expr, "start") {
-			d.Midnight()
-		}
+		base = base.AddDate(0, 0, i)
 	} else if strings.HasPrefix(fields[1], "week") {
-		ti = ti.AddDate(0, 0, i*7)
+		base = base.AddDate(0, 0, i*7)
 
 		if strings.Contains(expr, "start") {
 			// Roll back to Monday:
-			if wd := ti.Weekday(); wd == time.Sunday {
-				ti = ti.AddDate(0, 0, -6)
+			if wd := base.Weekday(); wd == time.Sunday {
+				base = base.AddDate(0, 0, -6)
 			} else {
-				ti = ti.AddDate(0, 0, -int(wd)+1)
+				base = base.AddDate(0, 0, -int(wd)+1)
 			}
-			d.Midnight()
+
 		}
 
 	} else if strings.HasPrefix(fields[1], "hour") {
-		ti = ti.Add(time.Duration(i) * time.Hour)
+		base = base.Add(time.Duration(i) * time.Hour)
 		if strings.Contains(expr, "start") {
-			ti = time.Date(ti.Year(), ti.Month(), ti.Day(), ti.Hour(), 0, 0, 0, ti.Location())
+			base = time.Date(base.Year(), base.Month(), base.Day(), base.Hour(), 0, 0, 0, base.Location())
 		}
 	} else if strings.HasPrefix(fields[1], "minute") {
-		ti = ti.Add(time.Duration(i) * time.Minute)
+		base = base.Add(time.Duration(i) * time.Minute)
 		if strings.Contains(expr, "start") {
-			ti = time.Date(ti.Year(), ti.Month(), ti.Day(), ti.Hour(), ti.Minute(), 0, 0, ti.Location())
+			base = time.Date(base.Year(), base.Month(), base.Day(), base.Hour(), base.Minute(), 0, 0, base.Location())
 		}
 	} else if strings.HasPrefix(fields[1], "second") {
-		ti = ti.Add(time.Duration(i) * time.Second)
+		base = base.Add(time.Duration(i) * time.Second)
 	} else {
 		return *d, nil
 	}
-	date := Time(ti)
-	d = &date
-	return *d, nil
+	base = base.Round(24 * time.Hour)
+	return Time(base), nil
 
 }
 
@@ -457,8 +466,8 @@ func (d *Time) DiffUnix(t int64) time.Duration {
 //  @receiver d
 //  @param t
 //  @return time.Duration
-func (d *Time) DiffDate(t Time) time.Duration {
-	return time.Duration(d.Unix()-t.Unix()) * time.Second
+func (d Time) DiffDate(t Time) time.Duration {
+	return d.Time().Sub(t.Time())
 }
 
 // DiffExpr add expr to date return timestamp
@@ -466,13 +475,12 @@ func (d *Time) DiffDate(t Time) time.Duration {
 //  @param expr
 //  @return time.Duration
 //  @return error
-func (d *Time) DiffExpr(expr string) (time.Duration, error) {
-	t := d.Time()
-	_, err := d.Calculate(expr)
+func (d Time) DiffExpr(expr string) (time.Duration, error) {
+	n, err := d.Calculate(expr)
 	if err != nil {
 		return time.Duration(0), err
 	}
-	return d.DiffTime(t), nil
+	return n.Time().Sub(d.Time()), nil
 }
 
 // DiffTime add given time date return timestamp
@@ -567,6 +575,17 @@ func FromUnix(sec int64) Time {
 //  @return Time
 //  @return error
 func TryParseTime(in interface{}) (Time, error) {
-
+	switch v := in.(type) {
+	case time.Time:
+		return Time(v), nil
+	case string:
+		return FromString(v)
+	case int64:
+		return FromUnix(v), nil
+	}
 	return Time{}, fmt.Errorf("unrecognized date input")
+}
+
+func (d Time) String() string {
+	return d.Time().String()
 }

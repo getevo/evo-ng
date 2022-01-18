@@ -1,14 +1,15 @@
 package args
 
 import (
-	"fmt"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func TestArgs(t *testing.T) {
 	os.Args = []string{"-a", "abcd", "-b", "cde", "-c"}
-	fmt.Println("-a", "=", Get("-a"))
-	fmt.Println("-b", "=", Get("-b"))
-	fmt.Println("-c", "=", Get("-c"))
+	assert.Equal(t, Get("-a"), "abcd")
+	assert.Equal(t, Get("-b"), "cde")
+	assert.Equal(t, Exists("-c"), true)
+	assert.Equal(t, Exists("-d"), false)
 }
