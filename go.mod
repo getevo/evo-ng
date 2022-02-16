@@ -18,7 +18,7 @@ require (
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
 	github.com/kelindar/binary v1.0.17
 	github.com/mattn/go-zglob v0.0.3
-	github.com/mitchellh/mapstructure v1.4.1
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/moznion/gowrtr v1.5.1
 	github.com/otiai10/copy v1.7.0
 	github.com/pkg/errors v0.9.1
@@ -53,6 +53,7 @@ require (
 	github.com/gofiber/websocket/v2 v2.0.15 // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
 	github.com/hart87/goflake v0.0.0-20210517135841-c95a47da3eb9 // indirect
+	github.com/heetch/confita v0.10.0
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.10.1 // indirect

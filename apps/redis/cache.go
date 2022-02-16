@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -40,11 +41,7 @@ func (c RedisCache) Get(key string, out interface{}) error {
 
 func (c RedisCache) Flush() error {
 	var keys = Search("*" + cacheSuffix)
-	if clusterClient != nil {
-		return clusterClient.Del(ctx, keys...).Err()
-	} else {
-		return singleClient.Del(ctx, keys...).Err()
-	}
+	return client.Del(context.Background(), keys...).Err()
 }
 
 func (c RedisCache) Keys() []string {

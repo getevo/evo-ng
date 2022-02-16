@@ -39,29 +39,35 @@ type RedisClient interface {
 	ScriptLoad(ctx context.Context, script string) *redis.StringCmd
 }
 
-// Client wraps a redis client.
+// client wraps a redis client.
 type LockClient struct {
 	client RedisClient
 	tmp    []byte
 	tmpMu  sync.Mutex
 }
 
-// New creates a new Client instance with a custom namespace.
+// New creates a new client instance with a custom namespace.
 func newLock(client RedisClient) *LockClient {
 	return &LockClient{client: client}
 }
 
 // Obtain tries to obtain a new lock using a key with the given TTL.
 // May return ErrNotObtained if not successful.
-func (c *LockClient) Obtain(key string, ttl time.Duration, ct *context.Context, opt *Options) (*Lock, error) {
+func (c *LockClient) Obtain(key string, ttl time.Duration, params ...interface{}) (*Lock, error) {
 	// Create a random token
 	token, err := c.randomToken()
 	if err != nil {
 		return nil, err
 	}
-	var ctx context.Context
-	if ct == nil {
-		ctx = context.Background()
+	var ctx = context.Background()
+	var opt = Options{}
+	for _, item := range params {
+		switch v := item.(type) {
+		case context.Context:
+			ctx = v
+		case Options:
+			opt = v
+		}
 	}
 	value := token + opt.getMetadata()
 	retry := opt.getRetryStrategy()

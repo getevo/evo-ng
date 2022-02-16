@@ -1,1 +1,2 @@
 - Event: onBeforeWrite
+- Redis: Universal client
