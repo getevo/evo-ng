@@ -3,7 +3,6 @@ package evo
 import (
 	"context"
 	"fmt"
-	"github.com/coreos/etcd/clientv3"
 	"github.com/creasty/defaults"
 	"github.com/getevo/evo-ng/lib/args"
 	consul_api "github.com/hashicorp/consul/api"
@@ -11,12 +10,10 @@ import (
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/consul"
 	"github.com/heetch/confita/backend/env"
-	"github.com/heetch/confita/backend/etcd"
 	"github.com/heetch/confita/backend/file"
 	"github.com/heetch/confita/backend/flags"
 	"github.com/heetch/confita/backend/vault"
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -145,22 +142,22 @@ func ParseConfig(params ...interface{}) error {
 		)
 	} else if args.Get("-etcd") != "" {
 		fmt.Println("Load config from etcd")
-		client, err := clientv3.New(clientv3.Config{
-			Username:  args.Get("-etcd-username"),
-			Password:  args.Get("-etcd-password"),
-			Endpoints: strings.Split(args.Get("-etcd"), ","),
-		})
-		if err == nil {
-			return err
-		}
+		/*		client, err := clientv3.New(clientv3.Config{
+					Username:  args.Get("-etcd-username"),
+					Password:  args.Get("-etcd-password"),
+					Endpoints: strings.Split(args.Get("-etcd"), ","),
+				})
+				if err == nil {
+					return err
+				}
 
-		loader = confita.NewLoader(
-			etcd.NewBackend(client, etcd.WithPrefix("-etcd-prefix")),
-		)
+				loader = confita.NewLoader(
+					etcd.NewBackend(client, etcd.WithPrefix("-etcd-prefix")),
+				)
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		loader.Load(ctx, params[out])
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				loader.Load(ctx, params[out])*/
 
 	} else if args.Get("-vault") != "" {
 		var cfg = vault_api.DefaultConfig()

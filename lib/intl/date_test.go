@@ -1,39 +1,40 @@
-package intl
+package intl_test
 
 import (
+	"github.com/getevo/evo-ng/lib/intl"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func TestDate(t *testing.T) {
-	assert.Equal(t, "2006/06/08", Date("2006/06/08").Time().Format("2006/01/02"))
-	assert.Equal(t, "2006/06/08", Date("2006", "06", "08").Time().Format("2006/01/02"))
-	assert.Equal(t, "2006/06/08", Date(2006, 6, 8).Time().Format("2006/01/02"))
+	assert.Equal(t, "2006/06/08", intl.Date("2006/06/08").Time().Format("2006/01/02"))
+	assert.Equal(t, "2006/06/08", intl.Date("2006", "06", "08").Time().Format("2006/01/02"))
+	assert.Equal(t, "2006/06/08", intl.Date(2006, 6, 8).Time().Format("2006/01/02"))
 
-	assert.Equal(t, "2006/06/08 10:45:30", Date("2006/06/08 10:45:30").Time().Format("2006/01/02 15:04:05"))
-	assert.Equal(t, "2006/06/08 10:45:30", Date(2006, 6, 8, 10, 45, 30).Time().Format("2006/01/02 15:04:05"))
-	assert.Equal(t, int64(1149763530000000020), Date(2006, 6, 8, 10, 45, 30, 20).Time().UnixNano())
+	assert.Equal(t, "2006/06/08 10:45:30", intl.Date("2006/06/08 10:45:30").Time().Format("2006/01/02 15:04:05"))
+	assert.Equal(t, "2006/06/08 10:45:30", intl.Date(2006, 6, 8, 10, 45, 30).Time().Format("2006/01/02 15:04:05"))
+	assert.Equal(t, int64(1149763530000000020), intl.Date(2006, 6, 8, 10, 45, 30, 20).Time().UnixNano())
 
-	assert.Equal(t, Date().Time(), time.Now())
+	assert.Equal(t, intl.Date().Time(), time.Now())
 
 	var l, _ = time.LoadLocation("Asia/Tehran")
 
-	assert.Equal(t, "2006/06/08 07:15:30", Date(2006, 6, 8, 10, 45, 30, 20, l).Time().UTC().Format("2006/01/02 15:04:05"))
-	assert.Equal(t, "2006/06/08 07:15:30", Date(2006, 6, 8, 10, 45, 30, 20, *l).Time().UTC().Format("2006/01/02 15:04:05"))
+	assert.Equal(t, "2006/06/08 07:15:30", intl.Date(2006, 6, 8, 10, 45, 30, 20, l).Time().UTC().Format("2006/01/02 15:04:05"))
+	assert.Equal(t, "2006/06/08 07:15:30", intl.Date(2006, 6, 8, 10, 45, 30, 20, *l).Time().UTC().Format("2006/01/02 15:04:05"))
 
 	//t.Error() // to indicate test failed
-	AddLocale("en-GB", "en-US", "it-IT", "fa-IR", "es-ES", "ru-RU")
-	var locale = GuessLocale("it")
+	intl.AddLocale("en-GB", "en-US", "it-IT", "fa-IR", "es-ES", "ru-RU")
+	var locale = intl.GuessLocale("it")
 
 	assert.Equal(t, locale.String(), "it-IT")
 
-	assert.Equal(t, "Giovedì 06 Giu, 2006", Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "it-IT"))
-	assert.Equal(t, "Giovedì 06 Giu, 2006", Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "it"))
-	assert.Equal(t, "Giovedì 06 Giu, 2006", Date(2006, 6, 8).Format("Monday 01 Jan, 2006", locale))
-	assert.Equal(t, "Четверг 06 Июн, 2006", Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "ru"))
+	assert.Equal(t, "Giovedì 06 Giu, 2006", intl.Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "it-IT"))
+	assert.Equal(t, "Giovedì 06 Giu, 2006", intl.Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "it"))
+	assert.Equal(t, "Giovedì 06 Giu, 2006", intl.Date(2006, 6, 8).Format("Monday 01 Jan, 2006", locale))
+	assert.Equal(t, "Четверг 06 Июн, 2006", intl.Date(2006, 6, 8).Format("Monday 01 Jan, 2006", "ru"))
 
-	var base = Date(2006, 6, 8, 10, 45, 30, 20)
+	var base = intl.Date(2006, 6, 8, 10, 45, 30, 20)
 
 	assert.Equal(t, "2006/06/04", base.SetDay(4).Format("2006/01/02"))
 	assert.Equal(t, "2022/06/08", base.SetYear(2022).Format("2006/01/02"))

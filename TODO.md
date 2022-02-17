@@ -1,2 +1,3 @@
 - Event: onBeforeWrite
+- Cache Middleware  
 - Redis: Universal client

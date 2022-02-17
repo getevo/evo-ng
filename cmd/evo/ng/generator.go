@@ -37,10 +37,10 @@ var ContextInterface = Function{
 }
 
 func Start() {
-	err := os.Remove("./go.mod")
-	if err != nil {
-		evo.Panic(err)
+	if !file.IsFileExist("./app.json") {
+		panic("missing app.json")
 	}
+	os.Remove("./go.mod")
 	skeleton = GetSkeleton("./app.json")
 
 	main.Events.Set("OverRide", generator.NewFunc(nil, generator.NewFuncSignature("OverRide")))
@@ -148,6 +148,8 @@ func run(cmd string, args ...string) {
 	fmt.Println(cmd, strings.Join(args, " "))
 	c := exec.Command(cmd, args...)
 	c.Dir = file.WorkingDir()
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
 	err := c.Run()
 	if err != nil {
 		evo.Panic(err)
