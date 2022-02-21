@@ -7,7 +7,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde
 	github.com/creasty/defaults v1.5.2
-	github.com/fasthttp/websocket v1.4.6
+	github.com/fasthttp/websocket v1.5.0
 	github.com/fatih/color v1.13.0
 	github.com/getevo/evo v1.0.9
 	github.com/getevo/monday v1.0.2
