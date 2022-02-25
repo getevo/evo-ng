@@ -1,3 +1,6 @@
 - Event: onBeforeWrite
 - Cache Middleware  
 - Redis: Universal client
+- L10N
+- Configuration perfection
+- Auto embed http context

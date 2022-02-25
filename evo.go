@@ -56,6 +56,7 @@ func Engine() {
 	if err != nil {
 		panic(errors.WithStack(err))
 	}
+
 	Events.Register()
 	Events.On("exit", func() {
 		go func() {

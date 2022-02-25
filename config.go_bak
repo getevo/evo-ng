@@ -1,12 +1,18 @@
 package evo
 
 import (
+	"context"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/getevo/evo-ng/lib/args"
-	"github.com/mitchellh/mapstructure"
-	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	consul_api "github.com/hashicorp/consul/api"
+	vault_api "github.com/hashicorp/vault/api"
+	"github.com/heetch/confita"
+	"github.com/heetch/confita/backend/consul"
+	"github.com/heetch/confita/backend/env"
+	"github.com/heetch/confita/backend/file"
+	"github.com/heetch/confita/backend/flags"
+	"github.com/heetch/confita/backend/vault"
 	"reflect"
 	"time"
 )
@@ -65,7 +71,6 @@ type Configuration struct {
 		MaxIdleConns                             int      `default:"10" config:"max_idle_connections" json:"max_idle_connections"`
 		ConnMaxLifeTime                          string   `default:"1h" config:"connection_max_lifetime" json:"connection_max_lifetime"`
 		ConnMaxIdleTime                          string   `default:"10m" config:"connection_max_idle_time" json:"connection_max_idle_time"`
-		L10n                                     bool     `default:"false" config:"l10n" json:"l10n"`
 	} `config:"database" json:"database"`
 }
 
@@ -78,15 +83,12 @@ func (c Configuration) Default() Configuration {
 
 func ParseConfig(params ...interface{}) error {
 	var path = ""
-	var category = ""
 	var out int
 	for i, item := range params {
 		switch val := item.(type) {
 		case string:
 			if path == "" {
 				path = val
-			} else {
-				category = val
 			}
 		default:
 			if reflect.TypeOf(val).Kind() == reflect.Struct {
@@ -104,40 +106,96 @@ func ParseConfig(params ...interface{}) error {
 		}
 	}
 
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		return fmt.Errorf("could not load config file at %s", path)
-	}
-	m := map[string]interface{}{}
-	err = yaml.Unmarshal(data, &m)
-	if err != nil {
-		return err
-	}
-	var toDecode interface{}
-	if category != "" {
-		if v, ok := m[category]; ok {
-			toDecode = v
-		} else {
-			return fmt.Errorf("cannot find %s in %s", category, path)
+	var loader *confita.Loader
+	if args.Get("-consul") != "" {
+		fmt.Println("Load config from consul")
+		var cfg = consul_api.DefaultConfig()
+		if args.Get("-consul") != "default" {
+			cfg.Address = args.Get("-consul")
 		}
+		if args.Get("-consul-scheme") != "" {
+			cfg.Scheme = args.Get("-consul-scheme")
+		}
+		if args.Get("-consul-datacenter") != "" {
+			cfg.Datacenter = args.Get("-consul-datacenter")
+		}
+		if args.Get("-consul-token") != "" {
+			cfg.Token = args.Get("-consul-token")
+		}
+		if args.Get("-consul-token-file") != "" {
+			cfg.TokenFile = args.Get("-consul-token-file")
+		}
+		if args.Get("-consul-username") != "" {
+			cfg.HttpAuth = &consul_api.HttpBasicAuth{
+				Username: args.Get("-consul-username"),
+				Password: args.Get("-consul-password"),
+			}
+		}
+		client, err := consul_api.NewClient(cfg)
+		if err == nil {
+			return err
+		}
+		loader = confita.NewLoader(
+			env.NewBackend(),
+			consul.NewBackend(client),
+			flags.NewBackend(),
+		)
+	} else if args.Get("-etcd") != "" {
+		fmt.Println("Load config from etcd")
+		/*		client, err := clientv3.New(clientv3.Config{
+					Username:  args.Get("-etcd-username"),
+					Password:  args.Get("-etcd-password"),
+					Endpoints: strings.Split(args.Get("-etcd"), ","),
+				})
+				if err == nil {
+					return err
+				}
+
+				loader = confita.NewLoader(
+					etcd.NewBackend(client, etcd.WithPrefix("-etcd-prefix")),
+				)
+
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				loader.Load(ctx, params[out])*/
+
+	} else if args.Get("-vault") != "" {
+		var cfg = vault_api.DefaultConfig()
+		if args.Get("-vault") != "default" {
+			cfg.Address = args.Get("-vault")
+		}
+
+		if args.Get("-vault-agent-address") != "" {
+			cfg.AgentAddress = args.Get("-vault-agent-address")
+		}
+		client, err := vault_api.NewClient(cfg)
+		if err == nil {
+			return err
+		}
+		if args.Get("-vault-version") == "1" {
+			loader = confita.NewLoader(
+				env.NewBackend(),
+				vault.NewBackend(client.Logical(), args.Get("-vault-path")),
+				flags.NewBackend(),
+			)
+		} else {
+			loader = confita.NewLoader(
+				env.NewBackend(),
+				vault.NewBackendV2(client.Logical(), args.Get("-vault-path")),
+				flags.NewBackend(),
+			)
+		}
+
 	} else {
-		toDecode = m
+		loader = confita.NewLoader(
+			env.NewBackend(),
+			file.NewBackend(path),
+		)
 	}
 
-	cfg := &mapstructure.DecoderConfig{
-		Metadata:         nil,
-		Result:           &params[out],
-		TagName:          "json",
-		WeaklyTypedInput: true,
-	}
-	decoder, err := mapstructure.NewDecoder(cfg)
-	if err != nil {
-		return err
-	}
-	err = decoder.Decode(toDecode)
-	if err != nil {
-		return err
-	}
-	return nil
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var err = loader.Load(ctx, params[out])
 
+	return err
 }

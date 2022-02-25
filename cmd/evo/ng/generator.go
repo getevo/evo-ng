@@ -59,9 +59,9 @@ func Start() {
 		generator.NewRawStatement(`evo.Engine()`),
 		generator.NewNewline(),
 	)
-	if !file.IsFileExist("./go.mod") {
-		run("go", "mod", "init")
-	}
+
+	run("go", "mod", "init")
+	run("go", "mod", "edit", "-replace", "github.com/getevo/evo-ng/http="+"./http")
 
 	for src, dst := range skeleton.Replace {
 		run("go", "mod", "edit", "-replace", src+"="+dst)
@@ -82,7 +82,7 @@ func Start() {
 	CopyModule("github.com/getevo/evo-ng")
 	var imports = []string{
 		"github.com/getevo/evo-ng",
-		skeleton.Module + "/http",
+		"github.com/getevo/evo-ng/http",
 	}
 
 	main.Main = main.Main.AddStatements(generator.NewRawStatement("evo.UseContext(&http.Context{})"))

@@ -3,6 +3,7 @@ module github.com/getevo/evo-ng
 go 1.16
 
 require (
+	github.com/CloudyKit/jet v2.1.2+incompatible
 	github.com/CloudyKit/jet/v6 v6.1.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/awoodbeck/strftime v0.0.0-20180221155908-016cde65fcde
@@ -17,11 +18,12 @@ require (
 	github.com/gofiber/fiber/v2 v2.27.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
 	github.com/hart87/goflake v0.0.0-20210517135841-c95a47da3eb9 // indirect
-	github.com/hashicorp/consul/api v1.12.0
-	github.com/hashicorp/vault/api v1.3.1
-	github.com/heetch/confita v0.10.0
+	github.com/hashicorp/consul/api v1.12.0 // indirect
+	github.com/hashicorp/vault/api v1.3.1 // indirect
+	github.com/heetch/confita v0.10.0 // indirect
 	github.com/kelindar/binary v1.0.17
 	github.com/mattn/go-zglob v0.0.3
+	github.com/mitchellh/mapstructure v1.4.2
 	github.com/moznion/gowrtr v1.5.1
 	github.com/otiai10/copy v1.7.0
 	github.com/pkg/errors v0.9.1

@@ -1,6 +1,7 @@
 package evo
 
 import (
+	"fmt"
 	"github.com/getevo/evo-ng/lib/generic"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -101,8 +102,7 @@ func setupDatabase() {
 
 	connMaxIdleTime, err = generic.Parse(config.ConnMaxIdleTime).Duration()
 	if err != nil {
-		Panic("invalid db connection_max_idle_time")
-		return
+		fmt.Println("invalid db connection_max_idle_time")
 	}
 	if connMaxIdleTime < 1 {
 		connMaxIdleTime = 1 * time.Hour
