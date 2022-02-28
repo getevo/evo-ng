@@ -12,7 +12,7 @@ import (
 
 var dbo *gorm.DB
 
-type L10n struct {
+type Model struct {
 	LanguageCode language.Tag `gorm:"-"`
 }
 
@@ -28,15 +28,15 @@ func (ModelTranslation) TableName() string {
 	return "model_translation"
 }
 
-var l10nEnabled = false
+var modelLocalization = false
 
-func EnableL10n() {
-	if l10nEnabled {
+func EnableModelLocalization() {
+	if modelLocalization {
 		return
 	}
 	dbo = evo.GetDBO()
-	l10nEnabled = true
-	var controller L10n
+	modelLocalization = true
+	var controller Model
 	dbo.AutoMigrate(&ModelTranslation{})
 
 	dbo.Callback().Create().After("*").Register("l10n:create", controller.onCreateOrUpdate)
@@ -47,7 +47,7 @@ func EnableL10n() {
 
 }
 
-func (n L10n) onCreateOrUpdate(db *gorm.DB) {
+func (n Model) onCreateOrUpdate(db *gorm.DB) {
 	if _, skip := db.Statement.Get("l10n:skip"); !skip {
 		if db.Error == nil && db.Statement.Schema != nil {
 			switch db.Statement.ReflectValue.Kind() {
@@ -115,7 +115,7 @@ func (n L10n) onCreateOrUpdate(db *gorm.DB) {
 	}
 }
 
-func (n L10n) onDelete(db *gorm.DB) {
+func (n Model) onDelete(db *gorm.DB) {
 	if _, skip := db.Statement.Get("l10n:skip"); !skip {
 		if db.Error == nil && db.Statement.Schema != nil {
 			var pk = ""
@@ -145,7 +145,7 @@ func (n L10n) onDelete(db *gorm.DB) {
 	}
 }
 
-func (n L10n) onSelect(db *gorm.DB) {
+func (n Model) onSelect(db *gorm.DB) {
 	if _, skip := db.Statement.Get("l10n:skip"); !skip {
 		if db.Error == nil && db.Statement.Schema != nil {
 			switch db.Statement.ReflectValue.Kind() {
@@ -157,7 +157,7 @@ func (n L10n) onSelect(db *gorm.DB) {
 					lang = GuessLocale("")
 					db.Statement.Set("lang", lang)
 				}
-				var langValue = reflect.ValueOf(L10n{lang})
+				var langValue = reflect.ValueOf(Model{lang})
 				for idx := 0; idx < db.Statement.ReflectValue.Len(); idx++ {
 					obj := db.Statement.ReflectValue.Index(idx)
 					var pk = ""

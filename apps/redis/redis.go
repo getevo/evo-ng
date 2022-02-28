@@ -33,6 +33,10 @@ func GetConfig() Config {
 	return config.Redis
 }
 
+func Ready() bool {
+	return client != nil && client.Ping(context.Background()).Err() == nil
+}
+
 func Connect(config *Config) error {
 	client = redis.NewUniversalClient(&redis.UniversalOptions{
 		Addrs:       config.Server,

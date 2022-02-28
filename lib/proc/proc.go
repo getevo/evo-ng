@@ -29,7 +29,11 @@ func AppName() string {
 }
 
 func Name() string {
-	return os.Args[0]
+	return filepath.Base(os.Args[0])
+}
+
+func AppDir() string {
+	return filepath.Dir(os.Args[0])
 }
 
 func Args() []string {

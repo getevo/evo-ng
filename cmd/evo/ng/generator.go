@@ -66,6 +66,7 @@ func Start() {
 	for src, dst := range skeleton.Replace {
 		run("go", "mod", "edit", "-replace", src+"="+dst)
 	}
+
 	f, err := os.Open(file.WorkingDir() + "/go.mod")
 	if err != nil {
 		proc.Die("unable to open go.mod")
