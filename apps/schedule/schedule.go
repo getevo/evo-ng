@@ -2,29 +2,29 @@ package schedule
 
 import (
 	"fmt"
-	"github.com/getevo/evo-ng"
 	"github.com/getevo/evo-ng/lib/hash"
+	"github.com/getevo/evo-ng/lib/standard"
 	"sync"
 	"time"
 )
 
 type Job struct {
-	Name         string         `json:"name"`
-	Fn           func() error   `json:"-"`
-	OnError      func(error)    `json:"-"`
-	Blocking     bool           `json:"blocking"`
-	NextInvoke   time.Time      `json:"next_invoke"`
-	LastInvoke   time.Time      `json:"last_invoke"`
-	Recurring    *time.Duration `json:"recurring"`
-	ExecTime     int64          `json:"exec_time"`
-	AvgExecTime  int64          `json:"avg_exec_time"`
-	SingleNode   bool           `json:"single_node"`
-	LastError    error          `json:"last_error"`
-	Paused       bool           `json:"paused"`
-	Running      bool           `json:"running"`
-	Instances    int            `json:"instances"`
-	MaxInstances int            `json:"max_instances"`
-	Limiter      *evo.Limiter   `json:"limiter"`
+	Name         string            `json:"name"`
+	Fn           func() error      `json:"-"`
+	OnError      func(error)       `json:"-"`
+	Blocking     bool              `json:"blocking"`
+	NextInvoke   time.Time         `json:"next_invoke"`
+	LastInvoke   time.Time         `json:"last_invoke"`
+	Recurring    *time.Duration    `json:"recurring"`
+	ExecTime     int64             `json:"exec_time"`
+	AvgExecTime  int64             `json:"avg_exec_time"`
+	SingleNode   bool              `json:"single_node"`
+	LastError    error             `json:"last_error"`
+	Paused       bool              `json:"paused"`
+	Running      bool              `json:"running"`
+	Instances    int               `json:"instances"`
+	MaxInstances int               `json:"max_instances"`
+	Limiter      *standard.Limiter `json:"limiter"`
 }
 
 var mu sync.Mutex
@@ -141,7 +141,7 @@ func (j *Job) SetBlocking(blocking bool) *Job {
 	return j
 }
 
-func (j *Job) SetLimiter(limiter evo.Limiter) *Job {
+func (j *Job) SetLimiter(limiter standard.Limiter) *Job {
 	j.Limiter = &limiter
 	return j
 }

@@ -45,17 +45,27 @@ func (l *MachineLock) TryAcquireDuration(duration time.Duration) bool {
 	return canAcquire
 }
 
-func (l *MachineLock) TryUntilAcquire(duration time.Duration, retry time.Duration) bool {
+func (l *MachineLock) TryUntilAcquire(retry time.Duration, timeout time.Duration) bool {
 	var canAcquire = false
-	for {
-		redis.Get(l.Key, &l.Holder)
-		canAcquire = l.Holder == "" || l.Holder == l.Key
-		if canAcquire {
-			redis.Set(l.Key, l.This, duration)
+	for timeout := time.After(time.Second); ; {
+		select {
+		case <-timeout:
+			return false
+		default:
+			redis.Get(l.Key, &l.Holder)
+			canAcquire = l.Holder == "" || l.Holder == l.Key
+			if canAcquire {
+				redis.Set(l.Key, l.This, l.DefaultDuration)
+			}
+			if canAcquire {
+				return true
+			}
+			time.Sleep(retry)
 		}
-		if canAcquire {
-			return true
-		}
+
 	}
-	return canAcquire
+}
+
+func (l *MachineLock) Reset() {
+	redis.Del(l.Key)
 }
