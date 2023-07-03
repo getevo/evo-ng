@@ -18,9 +18,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.27.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
 	github.com/hart87/goflake v0.0.0-20210517135841-c95a47da3eb9 // indirect
-	github.com/hashicorp/consul/api v1.12.0 // indirect
-	github.com/hashicorp/vault/api v1.3.1 // indirect
-	github.com/heetch/confita v0.10.0 // indirect
 	github.com/kelindar/binary v1.0.17
 	github.com/mattn/go-zglob v0.0.3
 	github.com/mitchellh/mapstructure v1.4.2
@@ -38,6 +35,6 @@ require (
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/driver/sqlite v1.2.6
 	gorm.io/driver/sqlserver v1.2.1
-	gorm.io/gorm v1.22.5
+	gorm.io/gorm v1.25.2
 	gorm.io/plugin/dbresolver v1.1.0
 )
