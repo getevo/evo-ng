@@ -12,28 +12,25 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/getevo/evo v1.0.9
 	github.com/getevo/monday v1.0.2
-	github.com/go-git/go-git/v5 v5.4.2
+	github.com/go-git/go-git/v5 v5.11.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-redis/redis_rate/v9 v9.1.2
 	github.com/gofiber/fiber/v2 v2.27.0
 	github.com/hart87/GoFlake v0.0.0-20210517135841-c95a47da3eb9
 	github.com/hart87/goflake v0.0.0-20210517135841-c95a47da3eb9 // indirect
-	github.com/hashicorp/consul/api v1.12.0 // indirect
-	github.com/hashicorp/vault/api v1.3.1 // indirect
-	github.com/heetch/confita v0.10.0 // indirect
 	github.com/kelindar/binary v1.0.17
 	github.com/mattn/go-zglob v0.0.3
 	github.com/mitchellh/mapstructure v1.4.2
 	github.com/moznion/gowrtr v1.5.1
 	github.com/otiai10/copy v1.7.0
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/gjson v1.14.0
 	github.com/tidwall/sjson v1.2.4
 	github.com/valyala/fasthttp v1.33.0
-	golang.org/x/mod v0.5.1
-	golang.org/x/text v0.3.7
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	golang.org/x/mod v0.12.0
+	golang.org/x/text v0.14.0
+	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/mysql v1.2.3
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/driver/sqlite v1.2.6
